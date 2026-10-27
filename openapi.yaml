@@ -1,14 +1,57 @@
 openapi: 3.0.3
 info:
   title: Auth Service API
-  version: 1.0.0
+  version: 0.0.1
   description: >-
-    OpenAPI för autentiserings- och användarhanteringstjänster i simning.ax-miljön
+    OpenAPI för hantering av tidsrapportering i simning.ax-miljön
 
 servers:
   - url: http://localhost:8080
 
 paths:
+  /health:
+    get:
+      operationId: getHealth
+      tags:
+        - Health
+      summary: Service health information
+      responses:
+        '200':
+          description: Health information
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - data
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    type: object
+                    required:
+                      - status
+                      - service
+                      - version
+                      - checks
+                    properties:
+                      status:
+                        type: string
+                        enum:
+                          - ok
+                          - degraded
+                      service:
+                        type: string
+                        example: auth-service
+                      version:
+                        type: string
+                        example: 1.5.0
+                      checks:
+                        type: object
+                        additionalProperties:
+                          type: string
   /users:
     post:
       summary: Create user
