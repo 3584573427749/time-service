@@ -1,14 +1,22 @@
-version: "3.9"
-
 services:
-  slim-service:
-    container_name: slim-service
-    build: .
+  time-service:
+    container_name: time-service
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     ports:
       - "8080:8080"
     volumes:
       - .:/var/www
-    env_file:
-      - .env
     extra_hosts:
       - "host.docker.internal:host-gateway"
+
+  auth-service:
+    container_name: auth-service
+    image: ghcr.io/3584573427749/auth-service:latest
+    restart: unless-stopped
+
+  group-service:
+    container_name: group-service
+    image: ghcr.io/3584573427749/group-service:latest
+    restart: unless-stopped
