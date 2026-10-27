@@ -8,6 +8,10 @@ set -e
 #done
 
 #echo "[INIT] DB ready"
+if [ ! -f /var/www/.env ]; then
+    echo "[INIT] Creating .env from .env.example"
+    cp /var/www/.env.example /var/www/.env
+fi
 
 echo "[INIT] Running migrations..."
 /migrate.sh
