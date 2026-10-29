@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\Services;
 
-use App\Domain\DataTransportObjects\Health\HealthDTO;
+use App\Domain\DataTransportObjects\HealthDTO;
 use Doctrine\DBAL\Connection;
 use Throwable;
 

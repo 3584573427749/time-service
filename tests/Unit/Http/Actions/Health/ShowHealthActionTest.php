@@ -6,7 +6,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Http\Actions\Health;
 
 use App\Application\Services\HealthService;
-use App\Domain\DataTransportObjects\Health\HealthDTO;
+use App\Domain\DataTransportObjects\HealthDTO;
 use App\Http\Actions\Health\ShowHealthAction;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;

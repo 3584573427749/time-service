@@ -16,9 +16,6 @@ fi
 echo "[INIT] Running migrations..."
 /migrate.sh
 
-echo "[INIT] Dumping tables..."
-/dump_tables.sh
-
 echo "[INIT] Starting app..."
 
 exec "$@"
