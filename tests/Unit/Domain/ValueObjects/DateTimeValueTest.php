@@ -67,4 +67,49 @@ final class DateTimeValueTest extends TestCase {
             $json,
         );
     }
+
+    public function testFromStringCreatesDateTimeValue() : void {
+        $value = DateTimeValue::fromString('2026-10-29T15:30:45+02:00');
+
+        self::assertSame(
+            '2026-10-29T13:30:45+00:00',
+            $value->toISOString(),
+        );
+    }
+
+    public function testToDateTimeImmutableReturnsDateTimeImmutable() : void {
+        $value = DateTimeValue::fromString('2026-10-29T15:30:45+02:00');
+
+        self::assertInstanceOf(
+            DateTimeImmutable::class,
+            $value->toDateTimeImmutable(),
+        );
+    }
+
+    public function testToDateTimeImmutableContainsCorrectValue() : void {
+        $value = DateTimeValue::fromString('2026-10-29T15:30:45+02:00');
+
+        self::assertSame(
+            '2026-10-29T13:30:45+00:00',
+            $value->toDateTimeImmutable()->format(DATE_ATOM),
+        );
+    }
+
+    public function testToISOStringReturnsAtomFormattedDate() : void {
+        $value = DateTimeValue::fromString('2026-10-29T15:30:45+02:00');
+
+        self::assertSame(
+            '2026-10-29T13:30:45+00:00',
+            $value->toISOString(),
+        );
+    }
+
+    public function testCanBeCastToString() : void {
+        $value = DateTimeValue::fromString('2026-10-29T15:30:45+02:00');
+
+        self::assertSame(
+            $value->toString(),
+            (string) $value,
+        );
+    }
 }

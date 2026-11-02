@@ -1,9 +1,8 @@
 <?php
 
-
 declare(strict_types=1);
 
-namespace App\Domain\DataTransportObjects\Health;
+namespace App\Domain\DataTransportObjects;
 
 readonly class HealthDTO implements \JsonSerializable {
     /**
