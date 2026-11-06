@@ -20,7 +20,10 @@ interface TimeEntryRepository {
 
     public function get(TimeEntryId $id) : TimeEntry;
 
-    public function getByUserId(UserId $userId) : TimeEntry|false;
+    /**
+     * @return array<TimeEntry>
+     */
+    public function getByUser(UserId $userId) : array;
 
     public function delete(TimeEntryId $id) : void;
 }

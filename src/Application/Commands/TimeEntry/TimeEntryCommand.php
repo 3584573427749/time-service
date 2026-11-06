@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Commands;
+namespace App\Application\Commands\TimeEntry;
 
 use App\Domain\ValueObjects\DateValue;
 use App\Domain\ValueObjects\GroupId;

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Handlers;
+namespace App\Application\Handlers\TimeEntry;
 
-use App\Domain\Commands\TimeEntryCommand;
+use App\Application\Commands\TimeEntry\TimeEntryCommand;
 use App\Domain\DataTransportObjects\TimeEntryDTO;
 use App\Domain\Entities\TimeEntry;
 use App\Domain\Exception\FutureDateNotAllowedException;
@@ -18,7 +18,7 @@ class AddTimeEntryHandler {
 
     public function handle(TimeEntryCommand $command) : TimeEntryDTO {
         // Affärsregler
-        if ($command->date->toString() > date('Y-m-d')) {
+        if ($command->date->isFuture()) {
             throw new FutureDateNotAllowedException(
                 'Tidsposter kan inte registreras för framtida datum',
             );

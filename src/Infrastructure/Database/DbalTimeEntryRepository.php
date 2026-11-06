@@ -24,15 +24,15 @@ class DbalTimeEntryRepository extends AbstractDbRepository implements TimeEntryR
         return array_map(fn ($row) => TimeEntry::fromDBRow($row), $rows);
     }
 
-    public function getByUserId(UserId $userId) : TimeEntry|false {
-        $row = $this->connection->executeQuery('SELECT * FROM ' . self::TABLE . ' WHERE user_id = ? ', [$userId->toString()])
-                                ->fetchAssociative();
+    /**
+     * @return TimeEntry[]
+     */
+    public function getByUser(UserId $userId) : array {
+        $rows = $this->connection
+            ->executeQuery('SELECT * FROM ' . self::TABLE . ' WHERE user_id = ? ', [$userId->toString()])
+            ->fetchAllAssociative();
 
-        if ($row === false) {
-            return false;
-        }
-
-        return TimeEntry::fromDBRow($row);
+        return array_map(fn ($row) => TimeEntry::fromDBRow($row), $rows);
     }
 
     public function get(TimeEntryId $id) : TimeEntry {

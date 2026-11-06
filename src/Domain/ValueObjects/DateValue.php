@@ -48,6 +48,14 @@ final class DateValue implements JsonSerializable {
     }
 
     public function equals(self $other) : bool {
-        return $this->value === $other->value;
+        return $this->toString() === $other->toString();
+    }
+
+    public function isAfter(self $other) : bool {
+        return $this->toString() > $other->toString();
+    }
+
+    public function isFuture() : bool {
+        return $this->isAfter(new self(date('Y-m-d')));
     }
 }

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Actions\TimeEntry;
 
+use App\Application\Commands\TimeEntry\TimeEntryCommand;
+use App\Application\Handlers\TimeEntry\AddTimeEntryHandler;
 use App\Application\Validators\TimeEntryValidator;
-use App\Domain\Commands\TimeEntryCommand;
 use App\Domain\Exception\ValidationException;
-use App\Domain\Handlers\AddTimeEntryHandler;
 use App\Http\Actions\Action;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Log\LoggerInterface;
