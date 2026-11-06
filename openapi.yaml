@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  title: Auth Service API
-  version: 0.0.1
+  title: Time Service API
+  version: 0.0.2
   description: >-
     OpenAPI för hantering av tidsrapportering i simning.ax-miljön
 
