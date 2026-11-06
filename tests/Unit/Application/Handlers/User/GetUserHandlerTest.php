@@ -15,7 +15,7 @@ use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\TestCase;
 
 final class GetUserHandlerTest extends TestCase {
-    public function testGetAllReturnsUserDtos():void {
+    public function testGetAllReturnsUserDtos() : void {
         $db = $this->createMock(Connection::class);
         $repository = $this->createMock(UserRepository::class);
 
@@ -38,7 +38,7 @@ final class GetUserHandlerTest extends TestCase {
         );
     }
 
-    public function testGetIdReturnsUserDto():void {
+    public function testGetIdReturnsUserDto() : void {
         $db = $this->createMock(Connection::class);
         $repository = $this->createMock(UserRepository::class);
 
@@ -63,7 +63,7 @@ final class GetUserHandlerTest extends TestCase {
         );
     }
 
-    public function testGetIdThrowsExceptionWhenUserDoesNotExist():void {
+    public function testGetIdThrowsExceptionWhenUserDoesNotExist() : void {
         $db = $this->createMock(Connection::class);
         $repository = $this->createMock(UserRepository::class);
 
@@ -89,7 +89,7 @@ final class GetUserHandlerTest extends TestCase {
         );
     }
 
-    private function createUser():User {
+    private function createUser() : User {
         return new User(
             new UserId(
                 '550e8400-e29b-41d4-a716-446655440000',

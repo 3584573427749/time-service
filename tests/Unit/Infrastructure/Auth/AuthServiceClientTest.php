@@ -12,10 +12,10 @@ use Psr\Http\Message\RequestInterface;
 use Slim\Psr7\Response;
 
 final class AuthServiceClientTest extends TestCase {
-    public function testValidateServiceTokenReturnsResponse():void {
+    public function testValidateServiceTokenReturnsResponse() : void {
         $response = new Response();
 
-        $response->getBody()->write((string)json_encode(['valid' => true,]));
+        $response->getBody()->write((string)json_encode(['valid' => true, ]));
 
         $client = $this->createMock(
             Client::class,
@@ -49,7 +49,7 @@ final class AuthServiceClientTest extends TestCase {
         );
     }
 
-    public function testValidateServiceTokenReturnsFalseWhenRequestFails():void {
+    public function testValidateServiceTokenReturnsFalseWhenRequestFails() : void {
         $client = $this->createMock(
             Client::class,
         );

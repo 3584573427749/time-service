@@ -8,13 +8,10 @@ use App\Application\Commands\TimeEntry\TimeEntryCommand;
 use App\Domain\DataTransportObjects\TimeEntryDTO;
 use App\Domain\Entities\TimeEntry;
 use App\Domain\Exception\FutureDateNotAllowedException;
-use App\Domain\Repositories\TimeEntryRepository;
 use App\Domain\ValueObjects\DateTimeValue;
 use App\Domain\ValueObjects\TimeEntryId;
 
-class AddTimeEntryHandler {
-    public function __construct(private TimeEntryRepository $repository) {
-    }
+class AddTimeEntryHandler extends TimeEntryHandler {
 
     public function handle(TimeEntryCommand $command) : TimeEntryDTO {
         // Affärsregler
