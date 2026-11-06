@@ -18,7 +18,7 @@ use App\Domain\ValueObjects\UserId;
 use PHPUnit\Framework\TestCase;
 
 final class GetTimeEntryHandlerTest extends TestCase {
-    public function testHandleReturnsTimeEntryDto():void {
+    public function testHandleReturnsTimeEntryDto() : void {
         $repository = $this->createMock(TimeEntryRepository::class);
 
         $repository
@@ -33,7 +33,7 @@ final class GetTimeEntryHandlerTest extends TestCase {
                 $this->createTimeEntry(),
             );
 
-        $handler = new GetTimeEntryHandler($repository,);
+        $handler = new GetTimeEntryHandler($repository, );
 
         $result = $handler->handle(
             new TimeEntryId(
@@ -44,7 +44,7 @@ final class GetTimeEntryHandlerTest extends TestCase {
         self::assertInstanceOf(TimeEntryDTO::class, $result);
     }
 
-    public function testHandleThrowsNotFoundException():void {
+    public function testHandleThrowsNotFoundException() : void {
         $repository = $this->createMock(TimeEntryRepository::class);
 
         $repository
@@ -56,7 +56,7 @@ final class GetTimeEntryHandlerTest extends TestCase {
                 ),
             );
 
-        $handler = new GetTimeEntryHandler($repository,);
+        $handler = new GetTimeEntryHandler($repository, );
 
         $this->expectException(NotFoundException::class);
 
@@ -67,7 +67,7 @@ final class GetTimeEntryHandlerTest extends TestCase {
         );
     }
 
-    private function createTimeEntry():TimeEntry {
+    private function createTimeEntry() : TimeEntry {
         return new TimeEntry(
             new TimeEntryId(
                 '550e8400-e29b-41d4-a716-446655440001',

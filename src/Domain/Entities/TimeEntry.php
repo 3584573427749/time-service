@@ -82,6 +82,14 @@ class TimeEntry implements JsonSerializable {
         return $this->updatedAt;
     }
 
+    public function setDate(DateValue $date) : void {
+        $this->date = $date;
+    }
+
+    public function setDuration(TimeValue $duration) : void {
+        $this->duration = $duration;
+    }
+
     public function setActivityRole(string $activityRole) : void {
         $this->activityRole = $activityRole;
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Actions\Health\ShowHealthAction;
 use App\Http\Actions\TimeEntry\AddTimeEntryAction;
 use App\Http\Actions\TimeEntry\GetTimeEntryAction;
+use App\Http\Actions\TimeEntry\UpdateTimeEntryAction;
 use App\Http\Actions\User\DeleteUserAction;
 use App\Http\Actions\User\GetAllUsersAction;
 use App\Http\Actions\User\GetUserAction;
@@ -22,5 +23,6 @@ return function (App $app) : void {
 
     $app->post('/time-entry', AddTimeEntryAction::class);
     $app->get('/time-entry/{id}', GetTimeEntryAction::class);
+    $app->put('/time-entry/{id}', UpdateTimeEntryAction::class);
 
 };

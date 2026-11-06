@@ -20,10 +20,8 @@ use Psr\Log\LoggerInterface;
 use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Psr7\Factory\ServerRequestFactory;
 
-final class GetTimeEntryActionTest extends TestCase
-{
-    public function testReturnsTimeEntry(): void
-    {
+final class GetTimeEntryActionTest extends TestCase {
+    public function testReturnsTimeEntry() : void {
         $logger = $this->createMock(LoggerInterface::class);
 
         $timeEntry = new TimeEntry(
@@ -109,7 +107,7 @@ final class GetTimeEntryActionTest extends TestCase
      */
     private function decodeJsonResponse(
         ResponseInterface $response,
-    ): array {
+    ) : array {
         $body = (string) $response->getBody();
 
         self::assertNotSame('', $body);

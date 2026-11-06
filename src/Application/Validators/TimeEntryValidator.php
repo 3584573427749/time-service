@@ -15,6 +15,9 @@ class TimeEntryValidator {
     public static function validate(array $data) : array {
         $errors = [];
 
+        if (isset($data['TimeEntryId'])) {
+            self::validateId($data, $errors);
+        }
         self::validateUserId($data, $errors);
         self::validateDate($data, $errors);
         self::validateDuration($data, $errors);
@@ -22,6 +25,16 @@ class TimeEntryValidator {
         self::validateGroupId($data, $errors);
 
         return $errors;
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @param array<string, string> $errors
+     */
+    private static function validateId(array $data, array &$errors) : void {
+        if ($data['TimeEntryId'] !== $data['id']) {
+            $errors['id'] = 'Id matchar inte';
+        }
     }
 
     /**

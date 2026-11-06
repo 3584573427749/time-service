@@ -12,7 +12,7 @@ class GetTimeEntryHandler extends TimeEntryHandler {
     /**
      * @throws NotFoundException
      */
-    public function handle(TimeEntryId $id):TimeEntryDTO {
+    public function handle(TimeEntryId $id) : TimeEntryDTO {
         $timeEntry = $this->repository->get($id);
 
         return TimeEntryDTO::fromEntity($timeEntry);

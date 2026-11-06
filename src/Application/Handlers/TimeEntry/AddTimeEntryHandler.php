@@ -12,7 +12,6 @@ use App\Domain\ValueObjects\DateTimeValue;
 use App\Domain\ValueObjects\TimeEntryId;
 
 class AddTimeEntryHandler extends TimeEntryHandler {
-
     public function handle(TimeEntryCommand $command) : TimeEntryDTO {
         // Affärsregler
         if ($command->date->isFuture()) {

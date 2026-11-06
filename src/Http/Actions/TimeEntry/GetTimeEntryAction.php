@@ -15,7 +15,7 @@ class GetTimeEntryAction extends Action {
         parent::__construct($logger);
     }
 
-    protected function action():Response {
+    protected function action() : Response {
         $id = new TimeEntryId(
             $this->resolveArg('id'),
         );
