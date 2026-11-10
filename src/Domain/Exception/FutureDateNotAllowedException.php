@@ -4,5 +4,5 @@ declare(strict_types=1);
 
 namespace App\Domain\Exception;
 
-class FutureDateNotAllowedException extends DomainException {
+class FutureDateNotAllowedException extends \InvalidArgumentException {
 }

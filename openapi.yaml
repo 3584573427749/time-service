@@ -52,6 +52,7 @@ paths:
                         type: object
                         additionalProperties:
                           type: string
+
   /users:
     post:
       summary: Create user
@@ -73,13 +74,301 @@ paths:
                 $ref: '#/components/schemas/User'
         '400':
           description: Invalid JSON
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
         '409':
           description: User already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
         '422':
           description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+  /time-entry:
+    post:
+      tags:
+        - TimeEntry
+      summary: Lägg till tidspost
+      operationId: addTimeEntry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeEntryRequest'
+      responses:
+        '201':
+          description: Tidspost skapad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeEntry'
+
+        '400':
+          description: Felaktig indata
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+        '422':
+          description: Valideringsfel
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+  /time-entry/{id}:
+    get:
+      tags:
+        - TimeEntry
+      summary: Hämta tidspost
+      operationId: getTimeEntry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+
+      responses:
+        '200':
+          description: Tidspost hittad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeEntry'
+
+        '400':
+          description: Felaktigt id
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+        '404':
+          description: Tidspost saknas
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - TimeEntry
+      summary: Uppdatera tidspost
+      operationId: updateTimeEntry
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeEntryRequest'
+
+      responses:
+        '200':
+          description: Tidspost uppdaterad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeEntry'
+
+        '400':
+          description: Felaktigt id eller affärsregelbrott
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+        '404':
+          description: Tidspost saknas
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+        '422':
+          description: Valideringsfel
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 422
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - TimeEntry
+      summary: Ta bort tidspost
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+
+      responses:
+        '204':
+          description: Tidspost borttagen
+
+        '400':
+          description: Felaktigt id
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+        '404':
+          description: Tidspost saknas
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - type
+        - message
+      properties:
+        type:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          nullable: true
+          additionalProperties: true
+
     CreateUserRequest:
       type: object
       required:
@@ -129,3 +418,96 @@ components:
           createdAt:
             type: string
             format: date-time
+
+    TimeEntryRequest:
+      type: object
+      required:
+        - userId
+        - date
+        - duration
+        - activityRole
+      properties:
+        userId:
+          type: string
+          format: uuid
+
+        date:
+          type: string
+          format: date
+
+        duration:
+          type: string
+          example: "03:05:00"
+
+        activityRole:
+          type: string
+          example: "Ledare"
+
+        groupId:
+          type: string
+          format: uuid
+          nullable: true
+
+        comment:
+          type: string
+          nullable: true
+
+    TimeEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+
+        userId:
+          type: string
+          format: uuid
+
+        date:
+          type: string
+          format: date
+
+        duration:
+          type: string
+          example: "03:05:00"
+
+        activityRole:
+          type: string
+
+        groupId:
+          type: string
+          format: uuid
+          nullable: true
+
+        comment:
+          type: string
+          nullable: true
+
+        approvedBy:
+          type: string
+          format: uuid
+          nullable: true
+
+        approvedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+        exportedBy:
+          type: string
+          format: uuid
+          nullable: true
+
+        exportedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+        createdAt:
+          type: string
+          format: date-time
+
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
