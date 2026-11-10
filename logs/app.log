@@ -38,3 +38,4 @@
 [2026-11-02T13:26:39.588887+00:00] slim.ERROR: Slim\Exception\HttpNotFoundException (500): Not found. {"path":"/favicon.ico","method":"GET","details":null} []
 [2026-11-02T13:26:39.588073+00:00] slim.ERROR: Slim\Exception\HttpNotFoundException (500): Not found. {"path":"/favicon.ico","method":"GET","details":null} []
 [2026-11-02T13:27:11.872573+00:00] slim.ERROR: Slim\Exception\HttpNotFoundException (500): Not found. {"path":"/favicon.ico","method":"GET","details":null} []
+[2026-11-08T19:09:41.189742+00:00] slim.ERROR: Slim\Exception\HttpNotFoundException (500): Not found. {"path":"/","method":"GET","details":null} []

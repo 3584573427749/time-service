@@ -9,16 +9,22 @@ use PHPUnit\Framework\TestCase;
 
 final class TimeEntryValidatorTest extends TestCase {
     public function testReturnsNoErrorsForValidInput() : void {
-        $errors = TimeEntryValidator::validate([
-            'userId' => '550e8400-e29b-41d4-a716-446655440000',
-            'date' => '2026-11-05',
-            'duration' => '03:05',
-            'activityRole' => 'Ledare',
-            'groupId' => '660e8400-e29b-41d4-a716-446655440000',
-            'comment' => 'Test',
-        ]);
-
+        $errors = TimeEntryValidator::validate($this->getValidData());
         self::assertSame([], $errors);
+
+        $errors = TimeEntryValidator::validate($this->getValidData([
+            'id' => null, 'TimeEntryId' => null,
+        ]));
+        self::assertSame([], $errors);
+
+    }
+
+    public function testReturnsErrorWhenIdsMismatch() : void {
+        $errors = TimeEntryValidator::validate($this->getValidData([
+            'id' => '12345678-e29b-41d4-a716-446655440001',
+        ]));
+
+        self::assertArrayHasKey('id', $errors);
     }
 
     public function testReturnsErrorWhenUserIdIsMissing() : void {
@@ -131,6 +137,8 @@ final class TimeEntryValidatorTest extends TestCase {
      */
     private function getValidData(array $override = []) : array {
         return array_merge([
+            'TimeEntryId' => '12345678-e29b-41d4-a716-446655440000',
+            'id' => '12345678-e29b-41d4-a716-446655440000',
             'userId' => '550e8400-e29b-41d4-a716-446655440000',
             'date' => '2026-11-05',
             'duration' => '03:05',
