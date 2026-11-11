@@ -54,9 +54,32 @@ paths:
                           type: string
 
   /users:
+    get:
+      summary: Get all users
+      operationId: getUsers
+      tags:
+        - Users
+      responses:
+        200:
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - data
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
     post:
-      summary: Create user
-      operationId: createUser
+      summary: Adds or updates a user
+      operationId: upsertUser
       tags:
         - Users
       requestBody:
@@ -64,16 +87,25 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateUserRequest'
+              $ref: '#/components/schemas/User'
       responses:
-        '201':
-          description: User created
+        '200':
+          description: User created or updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                type: object
+                required:
+                  - statusCode
+                  - data
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    $ref: '#/components/schemas/User'
         '400':
-          description: Invalid JSON
+          description: Invalid Request
           content:
             application/json:
               schema:
@@ -84,26 +116,9 @@ paths:
                 properties:
                   statusCode:
                     type: integer
-                    example: 404
+                    example: 400
                   error:
                     $ref: '#/components/schemas/ErrorResponse'
-
-        '409':
-          description: User already exists
-          content:
-            application/json:
-              schema:
-                type: object
-                required:
-                  - statusCode
-                  - error
-                properties:
-                  statusCode:
-                    type: integer
-                    example: 404
-                  error:
-                    $ref: '#/components/schemas/ErrorResponse'
-
         '422':
           description: Validation error
           content:
@@ -116,9 +131,115 @@ paths:
                 properties:
                   statusCode:
                     type: integer
+                    example: 422
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+  /users/{id}:
+    get:
+      summary: Get user by ID
+      operationId: getUserById
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - data
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
                     example: 404
                   error:
                     $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete user by ID
+      description: Delete a user by its unique identifier
+      operationId: deleteUserById
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: User deleted
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
 
   /time-entry:
     post:
@@ -352,6 +473,77 @@ paths:
                   error:
                     $ref: '#/components/schemas/ErrorResponse'
 
+  /time-entry/{id}/approve:
+    put:
+      tags:
+        - TimeEntry
+      summary: Attestera tidspost
+      operationId: approveTimeEntry
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+
+      responses:
+        '200':
+          description: Tidspost attesterad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeEntry'
+
+        '400':
+          description: Felaktigt id
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+        '404':
+          description: Tidspost saknas
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+        '409':
+          description: Tidsposten är redan attesterad
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 409
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     ErrorResponse:
@@ -393,31 +585,31 @@ components:
       type: object
       required:
         - id
-        - email
         - firstName
         - lastName
-        - roles
-        - createdAt
+        - active
       properties:
         id:
           type: string
           format: uuid
-        email:
-          type: string
-          format: email
         firstName:
           type: string
         lastName:
           type: string
-        roles:
-          type: array
-          items:
-            type: string
-          example:
-            - user
-          createdAt:
-            type: string
-            format: date-time
+        active:
+          type: integer
+          enum:
+            - 0
+            - 1
+          example: 1
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
 
     TimeEntryRequest:
       type: object

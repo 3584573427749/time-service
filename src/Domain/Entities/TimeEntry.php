@@ -109,11 +109,13 @@ class TimeEntry implements JsonSerializable {
     public function approve(UserId $userId, DateTimeValue $approvedAt) : void {
         $this->approvedBy = $userId;
         $this->approvedAt = $approvedAt;
+        $this->updatedAt = $approvedAt;
     }
 
     public function markAsExported(UserId $userId, DateTimeValue $exportedAt) : void {
         $this->exportedBy = $userId;
         $this->exportedAt = $exportedAt;
+        $this->updatedAt = $exportedAt;
     }
 
     /**
