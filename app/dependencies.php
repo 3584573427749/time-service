@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 use App\Application\ErrorHandler\ErrorHandler;
 use App\Application\Middleware\ErrorMiddleware;
+use App\Infrastructure\Auth\AuthServiceClient;
 use DI\ContainerBuilder;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
+use GuzzleHttp\Client;
 use Psr\Container\ContainerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -18,6 +20,15 @@ return function (ContainerBuilder $builder) {
 
         ErrorHandler::class => fn ($c) => new ErrorHandler($c->get('logger')),
         ErrorMiddleware::class => fn ($c) => new ErrorMiddleware($c->get(ErrorHandler::class)),
+
+        AuthServiceClient::class => function () {
+            return new AuthServiceClient(
+                new Client([
+                    'base_uri' => rtrim($_ENV['AUTH_SERVICE_URL'], '/'),
+                    'timeout' => 3.0,
+                ]),
+            );
+        },
 
         // Database Connection (singleton)
         Connection::class => function (ContainerInterface $c) {

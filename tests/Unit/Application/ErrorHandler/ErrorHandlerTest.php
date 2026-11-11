@@ -8,7 +8,7 @@ use App\Application\ErrorHandler\ErrorHandler;
 use App\Domain\Exception\ForbiddenException;
 use App\Domain\Exception\InternalException;
 use App\Domain\Exception\NotFoundException;
-use App\Domain\Exception\RecordExistsException;
+use App\Domain\Exception\TimeEntryAlreadyApprovedException;
 use App\Domain\Exception\UnauthorizedException;
 use App\Domain\Exception\ValidationException;
 use Monolog\Logger;
@@ -75,7 +75,7 @@ class ErrorHandlerTest extends TestCase {
     }
 
     public function testRecordExistsException() : void {
-        $result = $this->handle(new RecordExistsException('Exists'));
+        $result = $this->handle(new TimeEntryAlreadyApprovedException('Exists'));
 
         $this->assertSame(409, $result['status']);
     }

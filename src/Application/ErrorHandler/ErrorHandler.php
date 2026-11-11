@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Application\ErrorHandler;
 
+use App\Domain\Exception\DomainException;
 use App\Domain\Exception\ForbiddenException;
 use App\Domain\Exception\InternalException;
 use App\Domain\Exception\NotFoundException;
-use App\Domain\Exception\RecordExistsException;
+use App\Domain\Exception\TimeEntryAlreadyApprovedException;
 use App\Domain\Exception\UnauthorizedException;
 use App\Domain\Exception\ValidationException;
 use Monolog\Logger;
@@ -51,7 +52,8 @@ class ErrorHandler {
             $exception instanceof UnauthorizedException => 401,
             $exception instanceof ForbiddenException => 403,
             $exception instanceof NotFoundException => 404,
-            $exception instanceof RecordExistsException => 409,
+            $exception instanceof TimeEntryAlreadyApprovedException => 409,
+            $exception instanceof DomainException => 409,
             $exception instanceof ValidationException => 422,
             $exception instanceof InternalException => 500,
             default => 500,

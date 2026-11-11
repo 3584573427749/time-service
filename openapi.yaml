@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  title: Auth Service API
-  version: 0.0.1
+  title: Time Service API
+  version: 0.0.2
   description: >-
     OpenAPI för hantering av tidsrapportering i simning.ax-miljön
 
@@ -52,10 +52,34 @@ paths:
                         type: object
                         additionalProperties:
                           type: string
+
   /users:
+    get:
+      summary: Get all users
+      operationId: getUsers
+      tags:
+        - Users
+      responses:
+        200:
+          description: A list of users
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - data
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
     post:
-      summary: Create user
-      operationId: createUser
+      summary: Adds or updates a user
+      operationId: upsertUser
       tags:
         - Users
       requestBody:
@@ -63,23 +87,480 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateUserRequest'
+              $ref: '#/components/schemas/User'
       responses:
-        '201':
-          description: User created
+        '200':
+          description: User created or updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                type: object
+                required:
+                  - statusCode
+                  - data
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    $ref: '#/components/schemas/User'
         '400':
-          description: Invalid JSON
-        '409':
-          description: User already exists
+          description: Invalid Request
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
         '422':
           description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 422
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+  /users/{id}:
+    get:
+      summary: Get user by ID
+      operationId: getUserById
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - data
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 200
+                  data:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Delete user by ID
+      description: Delete a user by its unique identifier
+      operationId: deleteUserById
+      tags:
+        - Users
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: User deleted
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+
+  /time-entry:
+    post:
+      tags:
+        - TimeEntry
+      summary: Lägg till tidspost
+      operationId: addTimeEntry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeEntryRequest'
+      responses:
+        '201':
+          description: Tidspost skapad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeEntry'
+
+        '400':
+          description: Felaktig indata
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+        '422':
+          description: Valideringsfel
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+  /time-entry/{id}:
+    get:
+      tags:
+        - TimeEntry
+      summary: Hämta tidspost
+      operationId: getTimeEntry
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+
+      responses:
+        '200':
+          description: Tidspost hittad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeEntry'
+
+        '400':
+          description: Felaktigt id
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+        '404':
+          description: Tidspost saknas
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+    put:
+      tags:
+        - TimeEntry
+      summary: Uppdatera tidspost
+      operationId: updateTimeEntry
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TimeEntryRequest'
+
+      responses:
+        '200':
+          description: Tidspost uppdaterad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeEntry'
+
+        '400':
+          description: Felaktigt id eller affärsregelbrott
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+        '404':
+          description: Tidspost saknas
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+        '422':
+          description: Valideringsfel
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 422
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - TimeEntry
+      summary: Ta bort tidspost
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+
+      responses:
+        '204':
+          description: Tidspost borttagen
+
+        '400':
+          description: Felaktigt id
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+        '404':
+          description: Tidspost saknas
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+  /time-entry/{id}/approve:
+    put:
+      tags:
+        - TimeEntry
+      summary: Attestera tidspost
+      operationId: approveTimeEntry
+
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+
+      responses:
+        '200':
+          description: Tidspost attesterad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimeEntry'
+
+        '400':
+          description: Felaktigt id
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 400
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+        '404':
+          description: Tidspost saknas
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 404
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+        '409':
+          description: Tidsposten är redan attesterad
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 409
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - type
+        - message
+      properties:
+        type:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          nullable: true
+          additionalProperties: true
+
     CreateUserRequest:
       type: object
       required:
@@ -104,28 +585,121 @@ components:
       type: object
       required:
         - id
-        - email
         - firstName
         - lastName
-        - roles
-        - createdAt
+        - active
       properties:
         id:
           type: string
           format: uuid
-        email:
-          type: string
-          format: email
         firstName:
           type: string
         lastName:
           type: string
-        roles:
-          type: array
-          items:
-            type: string
-          example:
-            - user
-          createdAt:
-            type: string
-            format: date-time
+        active:
+          type: integer
+          enum:
+            - 0
+            - 1
+          example: 1
+        createdAt:
+          type: string
+          format: date-time
+          nullable: true
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+    TimeEntryRequest:
+      type: object
+      required:
+        - userId
+        - date
+        - duration
+        - activityRole
+      properties:
+        userId:
+          type: string
+          format: uuid
+
+        date:
+          type: string
+          format: date
+
+        duration:
+          type: string
+          example: "03:05:00"
+
+        activityRole:
+          type: string
+          example: "Ledare"
+
+        groupId:
+          type: string
+          format: uuid
+          nullable: true
+
+        comment:
+          type: string
+          nullable: true
+
+    TimeEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+
+        userId:
+          type: string
+          format: uuid
+
+        date:
+          type: string
+          format: date
+
+        duration:
+          type: string
+          example: "03:05:00"
+
+        activityRole:
+          type: string
+
+        groupId:
+          type: string
+          format: uuid
+          nullable: true
+
+        comment:
+          type: string
+          nullable: true
+
+        approvedBy:
+          type: string
+          format: uuid
+          nullable: true
+
+        approvedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+        exportedBy:
+          type: string
+          format: uuid
+          nullable: true
+
+        exportedAt:
+          type: string
+          format: date-time
+          nullable: true
+
+        createdAt:
+          type: string
+          format: date-time
+
+        updatedAt:
+          type: string
+          format: date-time
+          nullable: true
