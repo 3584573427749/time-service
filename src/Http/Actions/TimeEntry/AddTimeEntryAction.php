@@ -7,6 +7,7 @@ namespace App\Http\Actions\TimeEntry;
 use App\Application\Commands\TimeEntry\TimeEntryCommand;
 use App\Application\Handlers\TimeEntry\AddTimeEntryHandler;
 use App\Application\Validators\TimeEntryValidator;
+use App\Domain\Enums\Permission;
 use App\Domain\Exception\ForbiddenException;
 use App\Domain\Exception\ValidationException;
 use App\Http\Actions\Action;
@@ -30,7 +31,7 @@ class AddTimeEntryAction extends Action {
 
         if (
             $currentUser->getUserId()->toString() !== $data['userId']
-            && !$currentUser->hasPermission('time.addentry')
+            && !$currentUser->hasPermission(Permission::ADD_ENTRY)
         ) {
             throw new ForbiddenException(
                 'Saknar behörighet att registrera tid för annan användare',

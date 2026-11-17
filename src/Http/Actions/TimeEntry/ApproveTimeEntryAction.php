@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Actions\TimeEntry;
 
 use App\Application\Handlers\TimeEntry\ApproveTimeEntryHandler;
+use App\Domain\Enums\Permission;
 use App\Domain\Exception\ForbiddenException;
 use App\Domain\ValueObjects\TimeEntryId;
 use App\Http\Actions\Action;
@@ -21,7 +22,7 @@ class ApproveTimeEntryAction extends Action {
         // Hämta currentUser från AuthenticationMiddleware
         $currentUser = $this->getCurrentUser();
 
-        if (!$currentUser->hasPermission('time.approve')) {
+        if (!$currentUser->hasPermission(Permission::APPROVE)) {
             throw new ForbiddenException(
                 'Saknar attestbehörighet',
             );

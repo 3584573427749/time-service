@@ -7,6 +7,7 @@ namespace App\Application\Handlers\TimeEntry;
 use App\Application\Commands\TimeEntry\TimeEntryCommand;
 use App\Application\Security\CurrentUser;
 use App\Domain\DataTransportObjects\TimeEntryDTO;
+use App\Domain\Enums\Permission;
 use App\Domain\Exception\ForbiddenException;
 use App\Domain\Exception\FutureDateNotAllowedException;
 use App\Domain\Exception\NotFoundException;
@@ -29,7 +30,7 @@ class UpdateTimeEntryHandler extends TimeEntryHandler {
 
         // Kontrollera behörighet
         if (
-            !$currentUser->hasPermission('time.update')
+            !$currentUser->hasPermission(Permission::UPDATE)
             && !$timeEntry->getUserId()->equals($currentUser->getUserId())
         ) {
             throw new ForbiddenException('Saknar behörighet att uppdatera denna tidspost', );

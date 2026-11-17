@@ -4,9 +4,15 @@ declare(strict_types=1);
 
 namespace App\Application\Security;
 
+use App\Domain\Enums\Permission;
 use App\Domain\ValueObjects\UserId;
 
 class CurrentUser {
+    /**
+     * @var array<Permission>
+     */
+    private array $permissions;
+
     /**
      * @param array<string> $roles
      * @param array<string> $permissions
@@ -14,8 +20,14 @@ class CurrentUser {
     public function __construct(
         private UserId $userId,
         private array $roles,
-        private array $permissions,
+        array $permissions,
     ) {
+        $this->permissions = array_map(
+            static fn (string $permission) : ?Permission => Permission::tryFrom($permission),
+            $permissions,
+        )
+                |> (fn ($x) => array_filter($x, static fn (?Permission $permission) : bool => $permission !== null, ))
+                |> array_values(...);
     }
 
     public function getUserId() : UserId {
@@ -30,7 +42,7 @@ class CurrentUser {
     }
 
     /**
-     * @return array<string>
+     * @return array<Permission>
      */
     public function getPermissions() : array {
         return $this->permissions;
@@ -44,7 +56,7 @@ class CurrentUser {
         );
     }
 
-    public function hasPermission(string $permission) : bool {
+    public function hasPermission(Permission $permission) : bool {
         return in_array(
             $permission,
             $this->permissions,

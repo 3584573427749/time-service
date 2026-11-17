@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\Security;
 
 use App\Application\Security\CurrentUser;
+use App\Domain\Enums\Permission;
 use App\Domain\ValueObjects\UserId;
 use PHPUnit\Framework\TestCase;
 
@@ -75,11 +76,11 @@ final class CurrentUserTest extends TestCase {
             new UserId('550e8400-e29b-41d4-a716-446655440000', ),
             [],
             [
-                'time.approve',
+                Permission::APPROVE->value,
             ],
         );
 
-        self::assertTrue($user->hasPermission('time.approve'));
+        self::assertTrue($user->hasPermission(Permission::APPROVE));
     }
 
     public function testHasPermissionReturnsFalse() : void {
@@ -89,6 +90,6 @@ final class CurrentUserTest extends TestCase {
             [],
         );
 
-        self::assertFalse($user->hasPermission('time.approve'));
+        self::assertFalse($user->hasPermission(Permission::APPROVE));
     }
 }
