@@ -32,7 +32,8 @@ class UpdateTimeEntryAction extends Action {
 
         $command = TimeEntryCommand::fromRequest($data);
 
-        $dto = $this->handler->handle($command);
+        $currentUser = $this->getCurrentUser();
+        $dto = $this->handler->handle($command, $currentUser);
 
         return $this->respondWithData($dto);
     }

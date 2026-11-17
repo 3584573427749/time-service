@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit\Http\Actions\TimeEntry;
 
 use App\Application\Handlers\TimeEntry\DeleteTimeEntryHandler;
+use App\Application\Security\CurrentUser;
 use App\Domain\ValueObjects\TimeEntryId;
+use App\Domain\ValueObjects\UserId;
 use App\Http\Actions\TimeEntry\DeleteTimeEntryAction;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -36,15 +38,19 @@ final class DeleteTimeEntryActionTest extends TestCase {
             $handler,
         );
 
+        $currentUser = new CurrentUser(
+            new UserId('550e8400-e29b-41d4-a716-446655440000'),
+            [],
+            [],
+        );
+
         $request = (new ServerRequestFactory())
             ->createServerRequest(
                 'DELETE',
                 '/time-entry/550e8400-e29b-41d4-a716-446655440001',
             )
-            ->withAttribute(
-                'id',
-                '550e8400-e29b-41d4-a716-446655440001',
-            );
+            ->withAttribute('currentUser', $currentUser)
+            ->withAttribute('id', '550e8400-e29b-41d4-a716-446655440001');
 
         $response = (new ResponseFactory())
             ->createResponse();

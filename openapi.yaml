@@ -77,6 +77,11 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+
     post:
       summary: Adds or updates a user
       operationId: upsertUser
@@ -119,6 +124,10 @@ paths:
                     example: 400
                   error:
                     $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '422':
           description: Validation error
           content:
@@ -178,6 +187,10 @@ paths:
                     example: 400
                   error:
                     $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           description: User not found
           content:
@@ -224,6 +237,10 @@ paths:
                     example: 400
                   error:
                     $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           description: User not found
           content:
@@ -276,7 +293,10 @@ paths:
                     example: 404
                   error:
                     $ref: '#/components/schemas/ErrorResponse'
-
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '422':
           description: Valideringsfel
           content:
@@ -330,7 +350,10 @@ paths:
                     example: 404
                   error:
                     $ref: '#/components/schemas/ErrorResponse'
-
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           description: Tidspost saknas
           content:
@@ -391,7 +414,10 @@ paths:
                     example: 400
                   error:
                     $ref: '#/components/schemas/ErrorResponse'
-
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           description: Tidspost saknas
           content:
@@ -456,7 +482,10 @@ paths:
                     example: 400
                   error:
                     $ref: '#/components/schemas/ErrorResponse'
-
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           description: Tidspost saknas
           content:
@@ -470,6 +499,21 @@ paths:
                   statusCode:
                     type: integer
                     example: 400
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Tidsposten är redan attesterad
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 409
                   error:
                     $ref: '#/components/schemas/ErrorResponse'
 
@@ -511,7 +555,10 @@ paths:
                     example: 400
                   error:
                     $ref: '#/components/schemas/ErrorResponse'
-
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
         '404':
           description: Tidspost saknas
           content:
@@ -703,3 +750,36 @@ components:
           type: string
           format: date-time
           nullable: true
+
+  responses:
+    UnauthorizedResponse:
+      description: Autentisering saknas
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - statusCode
+              - error
+            properties:
+              statusCode:
+                type: integer
+                example: 401
+              error:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    ForbiddenResponse:
+      description: Saknar behörighet
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - statusCode
+              - error
+            properties:
+              statusCode:
+                type: integer
+                example: 403
+              error:
+                $ref: '#/components/schemas/ErrorResponse'

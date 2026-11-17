@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Http\Actions\TimeEntry;
 
 use App\Application\Handlers\TimeEntry\GetTimeEntryHandler;
+use App\Application\Security\CurrentUser;
 use App\Domain\DataTransportObjects\TimeEntryDTO;
 use App\Domain\Entities\TimeEntry;
 use App\Domain\ValueObjects\DateTimeValue;
@@ -57,11 +58,16 @@ final class GetTimeEntryActionTest extends TestCase {
             $handler,
         );
 
+        $currentUser = new CurrentUser(
+            new UserId('550e8400-e29b-41d4-a716-446655440000'),
+            [],
+            [],
+        );
+
         $request = (new ServerRequestFactory())
-            ->createServerRequest(
-                'GET',
-                '/time-entry/550e8400-e29b-41d4-a716-446655440001',
-            );
+            ->createServerRequest('GET', '/time-entry/550e8400-e29b-41d4-a716-446655440001', )
+            ->withAttribute('currentUser', $currentUser)
+        ;
 
         $response = (new ResponseFactory())
             ->createResponse();

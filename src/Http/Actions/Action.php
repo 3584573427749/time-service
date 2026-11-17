@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Actions;
 
+use App\Application\Security\CurrentUser;
 use App\Domain\Exception\DomainRecordNotFoundException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
@@ -76,5 +77,9 @@ abstract class Action {
         return $this->response
             ->withHeader('Content-Type', 'application/json')
             ->withStatus($payload->getStatusCode());
+    }
+
+    protected function getCurrentUser() : CurrentUser {
+        return $this->request->getAttribute('currentUser');
     }
 }

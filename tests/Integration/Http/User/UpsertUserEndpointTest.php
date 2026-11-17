@@ -21,12 +21,14 @@ final class UpsertUserEndpointTest extends BaseApiTestCases {
 
         $validator = new OpenApiValidator();
 
-        $request = (new ServerRequestFactory())
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
             ->createServerRequest(
                 'POST',
                 '/users',
             )
-            ->withHeader('Content-Type', 'application/json');
+            ->withHeader('Content-Type', 'application/json'),
+        );
 
         $request->getBody()->write(
             json_encode($requestBody, JSON_THROW_ON_ERROR),
@@ -90,19 +92,20 @@ final class UpsertUserEndpointTest extends BaseApiTestCases {
 
         $validator = new OpenApiValidator();
 
-        $request = (new ServerRequestFactory())
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
             ->createServerRequest(
                 'POST',
                 '/users',
             )
-            ->withHeader('Content-Type', 'application/json');
+            ->withHeader('Content-Type', 'application/json'),
+        );
 
         $request->getBody()->write(
             json_encode($requestBody, JSON_THROW_ON_ERROR),
         );
 
-        $request = $request
-            ->withParsedBody($requestBody);
+        $request = $request            ->withParsedBody($requestBody);
 
         $validator->validateRequest($request);
 
@@ -139,7 +142,8 @@ final class UpsertUserEndpointTest extends BaseApiTestCases {
     public function testReturns422WhenValidationFails() : void {
         $this->loadSchema('users');
 
-        $request = (new ServerRequestFactory())
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
             ->createServerRequest(
                 'POST',
                 '/users',
@@ -149,7 +153,8 @@ final class UpsertUserEndpointTest extends BaseApiTestCases {
                 'first_name' => 'A',
                 'last_name' => 'B',
                 'active' => '-2',
-            ]);
+            ]),
+        );
 
         $response = $this->app->handle($request);
 
@@ -167,7 +172,8 @@ final class UpsertUserEndpointTest extends BaseApiTestCases {
     public function testReturns400WhenIdIsInvalid() : void {
         $this->loadSchema('users');
 
-        $request = (new ServerRequestFactory())
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
             ->createServerRequest(
                 'POST',
                 '/users',
@@ -177,7 +183,8 @@ final class UpsertUserEndpointTest extends BaseApiTestCases {
                 'firstName' => 'Pingvinen',
                 'lastName' => 'Pingvinen',
                 'active' => 1,
-            ]);
+            ]),
+        );
 
         $response = $this->app->handle($request);
 

@@ -32,11 +32,13 @@ final class ApproveTimeEntryEndpointTest extends BaseApiTestCases {
 
         $validator = new OpenApiValidator();
 
-        $request = (new ServerRequestFactory())
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
             ->createServerRequest(
                 'PUT',
                 '/time-entry/550e8400-e29b-41d4-a716-446655440001/approve',
-            );
+            ),
+        );
 
         $validator->validateRequest($request);
 
@@ -54,11 +56,13 @@ final class ApproveTimeEntryEndpointTest extends BaseApiTestCases {
     public function testReturns404WhenTimeEntryDoesNotExist() : void {
         $this->loadSchema('time_entries');
 
-        $request = (new ServerRequestFactory())
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
             ->createServerRequest(
                 'PUT',
                 '/time-entry/550e8400-e29b-41d4-a716-446655440001/approve',
-            );
+            ),
+        );
 
         $response = $this->app->handle($request);
 
@@ -94,11 +98,13 @@ final class ApproveTimeEntryEndpointTest extends BaseApiTestCases {
             ],
         ]);
 
-        $request = (new ServerRequestFactory())
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
             ->createServerRequest(
                 'PUT',
                 '/time-entry/550e8400-e29b-41d4-a716-446655440001/approve',
-            );
+            ),
+        );
 
         $response = $this->app->handle($request);
 
@@ -114,15 +120,62 @@ final class ApproveTimeEntryEndpointTest extends BaseApiTestCases {
     }
 
     public function testReturns400WhenIdIsInvalid() : void {
-        $request = (new ServerRequestFactory())
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
             ->createServerRequest(
                 'PUT',
                 '/time-entry/invalid/approve',
-            );
+            ),
+        );
 
         $response = $this->app->handle($request);
 
         self::assertSame(400, $response->getStatusCode());
+
+        $validator = new OpenApiValidator();
+
+        $validator->validateResponse(
+            '/time-entry/{id}/approve',
+            'put',
+            $response,
+        );
+    }
+
+    public function testReturns403WhenUserLacksApprovePermission() : void {
+        $this->loadSchema('time_entries');
+
+        $this->seed('time_entries', [
+            [
+                'id' => '550e8400-e29b-41d4-a716-446655440001',
+                'user_id' => '550e8400-e29b-41d4-a716-446655440000',
+                'date' => '2026-11-05',
+                'duration' => '03:05:00',
+                'activity_role' => 'Ledare',
+                'group_id' => null,
+                'comment' => null,
+                'approved_by' => null,
+                'approved_at' => null,
+                'exported_by' => null,
+                'exported_at' => null,
+                'created_at' => '2026-11-05 12:00:00',
+                'updated_at' => null,
+            ],
+        ]);
+
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
+                ->createServerRequest(
+                    'PUT',
+                    '/time-entry/550e8400-e29b-41d4-a716-446655440001/approve',
+                ),
+        )->withoutHeader('X-Service-Permissions');
+
+        $response = $this->app->handle($request);
+
+        self::assertSame(
+            403,
+            $response->getStatusCode(),
+        );
 
         $validator = new OpenApiValidator();
 

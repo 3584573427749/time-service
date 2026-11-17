@@ -20,7 +20,8 @@ class GetTimeEntryAction extends Action {
             $this->resolveArg('id'),
         );
 
-        $dto = $this->handler->handle($id);
+        $currentUser = $this->getCurrentUser();
+        $dto = $this->handler->handle($id, $currentUser);
 
         return $this->respondWithData($dto);
     }

@@ -34,9 +34,11 @@ final class AddTimeEntryEndpointTest extends BaseApiTestCases {
 
         $validator = new OpenApiValidator();
 
-        $request = (new ServerRequestFactory())
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
             ->createServerRequest('POST', '/time-entry')
-            ->withHeader('Content-Type', 'application/json');
+            ->withHeader('Content-Type', 'application/json'),
+        );
 
         $request->getBody()->write(
             json_encode($requestBody, JSON_THROW_ON_ERROR),
@@ -64,14 +66,16 @@ final class AddTimeEntryEndpointTest extends BaseApiTestCases {
         $this->loadSchema('users');
         $this->loadSchema('time_entries');
 
-        $request = (new ServerRequestFactory())
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
             ->createServerRequest('POST', '/time-entry')
             ->withParsedBody([
                 'userId' => 'invalid',
                 'date' => '2026-11-05',
                 'duration' => '03:05:00',
                 'activityRole' => 'Ledare',
-            ]);
+            ]),
+        );
 
         $response = $this->app->handle($request);
 
@@ -103,14 +107,16 @@ final class AddTimeEntryEndpointTest extends BaseApiTestCases {
             ],
         ]);
 
-        $request = (new ServerRequestFactory())
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
             ->createServerRequest('POST', '/time-entry')
             ->withParsedBody([
                 'userId' => '550e8400-e29b-41d4-a716-446655440000',
                 'date' => '2999-12-31',
                 'duration' => '03:05:00',
                 'activityRole' => 'Ledare',
-            ]);
+            ]),
+        );
 
         $response = $this->app->handle($request);
 
@@ -122,6 +128,130 @@ final class AddTimeEntryEndpointTest extends BaseApiTestCases {
         $validator = new OpenApiValidator();
 
         $validator->validateResponse(
+            '/time-entry',
+            'post',
+            $response,
+        );
+    }
+
+    public function testReturns401WhenAuthenticationIsMissing() : void {
+        $this->loadSchema('users');
+        $this->loadSchema('time_entries');
+
+        $request = (new ServerRequestFactory())
+            ->createServerRequest('POST', '/time-entry')
+            ->withParsedBody([
+                'userId' => '550e8400-e29b-41d4-a716-446655440000',
+                'date' => '2026-11-05',
+                'duration' => '03:05:00',
+                'activityRole' => 'Ledare',
+            ]);
+
+        $response = $this->app->handle($request);
+
+        self::assertSame(401, $response->getStatusCode(), );
+
+        $this->validateResponse(
+            '/time-entry',
+            'post',
+            $response,
+        );
+    }
+
+    public function testReturns403WhenUserCreatesTimeEntryForAnotherUserWithoutPermission() : void {
+        $this->loadSchema('users');
+        $this->loadSchema('time_entries');
+
+        $this->seed('users', [
+            [
+                'id' => '550e8400-e29b-41d4-a716-446655440999',
+                'first_name' => 'Test',
+                'last_name' => 'User',
+                'active' => 1,
+                'created_at' => '2026-01-01 10:00:00',
+            ],
+        ]);
+
+        $requestBody = [
+            'userId' => '550e8400-e29b-41d4-a716-446655440999',
+            'date' => '2026-11-05',
+            'duration' => '03:05:00',
+            'activityRole' => 'Ledare',
+        ];
+
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
+                ->createServerRequest(
+                    'POST',
+                    '/time-entry',
+                ),
+        )->withoutHeader('X-Service-Permissions');
+
+        $request = $request->withParsedBody(
+            $requestBody,
+        );
+
+        $response = $this->app->handle($request);
+
+        self::assertSame(
+            403,
+            $response->getStatusCode(),
+        );
+
+        $this->validateResponse(
+            '/time-entry',
+            'post',
+            $response,
+        );
+    }
+
+    public function testReturns201WhenUserCreatesTimeEntryForAnotherUserWithPermission() : void {
+        $this->loadSchema('users');
+        $this->loadSchema('time_entries');
+
+        $this->seed('users', [
+            [
+                'id' => '550e8400-e29b-41d4-a716-446655440999',
+                'first_name' => 'Test',
+                'last_name' => 'User',
+                'active' => 1,
+                'created_at' => '2026-01-01 10:00:00',
+            ],
+        ]);
+
+        $requestBody = [
+            'userId' => '550e8400-e29b-41d4-a716-446655440999',
+            'date' => '2026-11-05',
+            'duration' => '03:05:00',
+            'activityRole' => 'Ledare',
+            'comment' => 'Testkommentar',
+        ];
+
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
+                ->createServerRequest(
+                    'POST',
+                    '/time-entry',
+                ),
+        )->withHeader(
+            'X-Service-Permissions',
+            'time.addentry',
+        );
+
+        $request->getBody()->write(
+            json_encode($requestBody, JSON_THROW_ON_ERROR),
+        );
+
+        $request = $request->withParsedBody($requestBody);
+
+        $response = $this->app->handle($request);
+
+        self::assertSame(
+            201,
+            $response->getStatusCode(),
+        );
+
+        $this->validateResponse(
             '/time-entry',
             'post',
             $response,

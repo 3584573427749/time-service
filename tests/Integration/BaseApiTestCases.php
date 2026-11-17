@@ -7,6 +7,7 @@ namespace Tests\Integration;
 use Cake\Core\ContainerInterface;
 use Dotenv\Dotenv;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Slim\App;
 use Tests\Integration\OpenApi\OpenApiValidator;
 use Tests\Unit\Infrastructure\Database\DatabaseBaseTestCase;
@@ -42,5 +43,23 @@ abstract class BaseApiTestCases extends DatabaseBaseTestCase {
             $method,
             $response,
         );
+    }
+
+    protected function authenticate(
+        ServerRequestInterface $request,
+    ) : ServerRequestInterface {
+        return $request
+            ->withHeader(
+                'X-User-Id',
+                '550e8400-e29b-41d4-a716-446655440000',
+            )
+            ->withHeader(
+                'X-User-Roles',
+                'time-attester',
+            )
+            ->withHeader(
+                'X-Service-Permissions',
+                'time.approve,time.export',
+            );
     }
 }
