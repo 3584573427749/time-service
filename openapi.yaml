@@ -1,12 +1,9 @@
 openapi: 3.0.3
 info:
   title: Time Service API
-  version: 0.0.2
+  version: 0.0.3
   description: >-
     OpenAPI för hantering av tidsrapportering i simning.ax-miljön
-
-servers:
-  - url: http://localhost:8080
 
 paths:
   /health:
