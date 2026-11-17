@@ -32,11 +32,13 @@ final class DeleteTimeEntryEndpointTest extends BaseApiTestCases {
 
         $validator = new OpenApiValidator();
 
-        $request = (new ServerRequestFactory())
-            ->createServerRequest(
-                'DELETE',
-                '/time-entry/550e8400-e29b-41d4-a716-446655440001',
-            );
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
+                ->createServerRequest(
+                    'DELETE',
+                    '/time-entry/550e8400-e29b-41d4-a716-446655440001',
+                ),
+        );
 
         $validator->validateRequest($request);
 
@@ -55,11 +57,13 @@ final class DeleteTimeEntryEndpointTest extends BaseApiTestCases {
     }
 
     public function testReturns400WhenIdIsInvalid() : void {
-        $request = (new ServerRequestFactory())
-            ->createServerRequest(
-                'DELETE',
-                '/time-entry/invalid',
-            );
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
+                ->createServerRequest(
+                    'DELETE',
+                    '/time-entry/invalid',
+                ),
+        );
 
         $response = $this->app->handle($request);
 
@@ -80,11 +84,13 @@ final class DeleteTimeEntryEndpointTest extends BaseApiTestCases {
     public function testReturns404WhenTimeEntryDoesNotExist() : void {
         $this->loadSchema('time_entries');
 
-        $request = (new ServerRequestFactory())
-            ->createServerRequest(
-                'DELETE',
-                '/time-entry/550e8400-e29b-41d4-a716-446655440001',
-            );
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
+                ->createServerRequest(
+                    'DELETE',
+                    '/time-entry/550e8400-e29b-41d4-a716-446655440001',
+                ),
+        );
 
         $response = $this->app->handle($request);
 
@@ -100,5 +106,106 @@ final class DeleteTimeEntryEndpointTest extends BaseApiTestCases {
             'delete',
             $response,
         );
+    }
+
+    public function testReturns401WhenAuthenticationIsMissing() : void {
+        $this->loadSchema('time_entries');
+
+        $request = (new ServerRequestFactory())
+            ->createServerRequest(
+                'DELETE',
+                '/time-entry/550e8400-e29b-41d4-a716-446655440001',
+            );
+
+        $response = $this->app->handle($request);
+
+        self::assertSame(
+            401,
+            $response->getStatusCode(),
+        );
+
+        $validator = new OpenApiValidator();
+
+        $validator->validateResponse(
+            '/time-entry/{id}',
+            'delete',
+            $response,
+        );
+    }
+
+    public function testReturns403WhenUserLacksDeletePermission() : void {
+        $this->loadSchema('time_entries');
+
+        $this->seed('time_entries', [
+            [
+                'id' => '550e8400-e29b-41d4-a716-446655440001',
+                'user_id' => '550e8400-e29b-41d4-a716-446655440001',
+                'date' => '2026-11-05',
+                'duration' => '03:05:00',
+                'activity_role' => 'Ledare',
+                'group_id' => null,
+                'comment' => null,
+                'approved_by' => null,
+                'approved_at' => null,
+                'exported_by' => null,
+                'exported_at' => null,
+                'created_at' => '2026-11-05 12:00:00',
+                'updated_at' => null,
+            ],
+        ]);
+
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
+                ->createServerRequest(
+                    'DELETE',
+                    '/time-entry/550e8400-e29b-41d4-a716-446655440001',
+                ),
+        )->withoutHeader('X-Service-Permissions');
+
+        $response = $this->app->handle($request);
+
+        self::assertSame(403, $response->getStatusCode());
+
+        $validator = new OpenApiValidator();
+
+        $validator->validateResponse('/time-entry/{id}', 'delete', $response);
+    }
+
+    public function testReturns409WhenTimeEntryIsAlreadyApproved() : void {
+        $this->loadSchema('time_entries');
+
+        $this->seed('time_entries', [
+            [
+                'id' => '550e8400-e29b-41d4-a716-446655440001',
+                'user_id' => '550e8400-e29b-41d4-a716-446655440000',
+                'date' => '2026-11-05',
+                'duration' => '03:05:00',
+                'activity_role' => 'Ledare',
+                'group_id' => null,
+                'comment' => null,
+                'approved_by' => '550e8400-e29b-41d4-a716-446655440999',
+                'approved_at' => '2026-11-05 13:00:00',
+                'exported_by' => null,
+                'exported_at' => null,
+                'created_at' => '2026-11-05 12:00:00',
+                'updated_at' => '2026-11-05 13:00:00',
+            ],
+        ]);
+
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
+                ->createServerRequest(
+                    'DELETE',
+                    '/time-entry/550e8400-e29b-41d4-a716-446655440001',
+                ),
+        );
+
+        $response = $this->app->handle($request);
+
+        self::assertSame(409, $response->getStatusCode());
+
+        $validator = new OpenApiValidator();
+
+        $validator->validateResponse('/time-entry/{id}', 'delete', $response);
     }
 }

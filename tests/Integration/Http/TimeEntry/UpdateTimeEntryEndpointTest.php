@@ -41,12 +41,14 @@ final class UpdateTimeEntryEndpointTest extends BaseApiTestCases {
 
         $validator = new OpenApiValidator();
 
-        $request = (new ServerRequestFactory())
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
             ->createServerRequest(
                 'PUT',
                 '/time-entry/550e8400-e29b-41d4-a716-446655440001',
             )
-            ->withHeader('Content-Type', 'application/json');
+            ->withHeader('Content-Type', 'application/json'),
+        );
 
         $request->getBody()->write(
             json_encode($requestBody, JSON_THROW_ON_ERROR),
@@ -73,7 +75,8 @@ final class UpdateTimeEntryEndpointTest extends BaseApiTestCases {
     public function testReturns422WhenRequestIsInvalid() : void {
         $this->loadSchema('time_entries');
 
-        $request = (new ServerRequestFactory())
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
             ->createServerRequest(
                 'PUT',
                 '/time-entry/550e8400-e29b-41d4-a716-446655440001',
@@ -84,7 +87,8 @@ final class UpdateTimeEntryEndpointTest extends BaseApiTestCases {
                 'date' => '2026-11-06',
                 'duration' => '04:15:00',
                 'activityRole' => 'Assistent',
-            ]);
+            ]),
+        );
 
         $response = $this->app->handle($request);
 
@@ -123,7 +127,8 @@ final class UpdateTimeEntryEndpointTest extends BaseApiTestCases {
             ],
         ]);
 
-        $request = (new ServerRequestFactory())
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
             ->createServerRequest(
                 'PUT',
                 '/time-entry/550e8400-e29b-41d4-a716-446655440001',
@@ -134,7 +139,8 @@ final class UpdateTimeEntryEndpointTest extends BaseApiTestCases {
                 'date' => '2999-12-31',
                 'duration' => '04:15:00',
                 'activityRole' => 'Assistent',
-            ]);
+            ]),
+        );
 
         $response = $this->app->handle($request);
 
@@ -155,7 +161,8 @@ final class UpdateTimeEntryEndpointTest extends BaseApiTestCases {
     public function testReturns404WhenTimeEntryDoesNotExist() : void {
         $this->loadSchema('time_entries');
 
-        $request = (new ServerRequestFactory())
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
             ->createServerRequest(
                 'PUT',
                 '/time-entry/550e8400-e29b-41d4-a716-446655440001',
@@ -166,7 +173,8 @@ final class UpdateTimeEntryEndpointTest extends BaseApiTestCases {
                 'date' => '2026-11-06',
                 'duration' => '04:15:00',
                 'activityRole' => 'Assistent',
-            ]);
+            ]),
+        );
 
         $response = $this->app->handle($request);
 

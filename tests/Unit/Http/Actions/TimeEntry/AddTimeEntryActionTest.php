@@ -6,8 +6,10 @@ namespace Tests\Unit\Http\Actions\TimeEntry;
 
 use App\Application\Commands\TimeEntry\TimeEntryCommand;
 use App\Application\Handlers\TimeEntry\AddTimeEntryHandler;
+use App\Application\Security\CurrentUser;
 use App\Domain\DataTransportObjects\TimeEntryDTO;
 use App\Domain\Entities\TimeEntry;
+use App\Domain\Exception\ForbiddenException;
 use App\Domain\Exception\ValidationException;
 use App\Domain\ValueObjects\DateTimeValue;
 use App\Domain\ValueObjects\DateValue;
@@ -57,8 +59,15 @@ final class AddTimeEntryActionTest extends TestCase {
             $handler,
         );
 
+        $currentUser = new CurrentUser(
+            new UserId('550e8400-e29b-41d4-a716-446655440000'),
+            [],
+            [],
+        );
+
         $request = (new ServerRequestFactory())
             ->createServerRequest('POST', '/time-entry')
+            ->withAttribute('currentUser', $currentUser)
             ->withParsedBody([
                 'userId' => '550e8400-e29b-41d4-a716-446655440000',
                 'date' => '2026-11-05',
@@ -135,5 +144,84 @@ final class AddTimeEntryActionTest extends TestCase {
         self::assertIsArray($decoded);
 
         return $decoded;
+    }
+
+    public function testAllowsCreatingTimeEntryForAnotherUserWithPermission() : void {
+        $logger = $this->createMock(LoggerInterface::class);
+
+        $dto = $this->createMock(TimeEntryDTO::class);
+
+        $handler = $this->createMock(AddTimeEntryHandler::class);
+
+        $handler
+            ->expects($this->once())
+            ->method('handle')
+            ->willReturn($dto);
+
+        $action = new AddTimeEntryAction(
+            $logger,
+            $handler,
+        );
+
+        $currentUser = new CurrentUser(
+            new UserId('550e8400-e29b-41d4-a716-446655440000'),
+            [],
+            ['time.addentry'],
+        );
+
+        $request = (new ServerRequestFactory())
+            ->createServerRequest('POST', '/time-entry')
+            ->withAttribute('currentUser', $currentUser)
+            ->withParsedBody([
+                'userId' => '550e8400-e29b-41d4-a716-446655440999',
+                'date' => '2026-11-05',
+                'duration' => '03:05:00',
+                'activityRole' => 'Ledare',
+            ]);
+
+        $response = (new ResponseFactory())->createResponse();
+
+        $result = $action($request, $response, []);
+
+        self::assertSame(201, $result->getStatusCode(), );
+    }
+
+    public function testThrowsForbiddenExceptionWhenCreatingTimeEntryForAnotherUserWithoutPermission() : void {
+        $logger = $this->createMock(LoggerInterface::class);
+
+        $handler = $this->createMock(AddTimeEntryHandler::class);
+
+        $handler
+            ->expects($this->never())
+            ->method('handle');
+
+        $action = new AddTimeEntryAction(
+            $logger,
+            $handler,
+        );
+
+        $currentUser = new CurrentUser(
+            new UserId('550e8400-e29b-41d4-a716-446655440000'),
+            [],
+            [],
+        );
+
+        $request = (new ServerRequestFactory())
+            ->createServerRequest('POST', '/time-entry')
+            ->withAttribute('currentUser', $currentUser)
+            ->withParsedBody([
+                'userId' => '550e8400-e29b-41d4-a716-446655440999',
+                'date' => '2026-11-05',
+                'duration' => '03:05:00',
+                'activityRole' => 'Ledare',
+            ]);
+
+        $response = (new ResponseFactory())->createResponse();
+
+        $this->expectException(ForbiddenException::class, );
+
+        $this->expectExceptionMessage('Saknar behörighet att registrera tid för annan användare', );
+
+        $action($request, $response, []);
     }
 }

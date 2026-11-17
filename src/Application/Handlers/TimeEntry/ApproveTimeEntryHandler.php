@@ -18,9 +18,7 @@ class ApproveTimeEntryHandler extends TimeEntryHandler {
         $timeEntry = $this->repository->get($id);
 
         if ($timeEntry->getApprovedAt() !== null) {
-            throw new TimeEntryAlreadyApprovedException(
-                'Tidsposten är redan attesterad',
-            );
+            throw new TimeEntryAlreadyApprovedException('Tidsposten är redan attesterad', );
         }
 
         $timeEntry->approve(

@@ -20,7 +20,8 @@ class DeleteTimeEntryAction extends Action {
 
         $timeEntryId = new TimeEntryId($id);
 
-        $this->handler->handle($timeEntryId);
+        $currentUser = $this->getCurrentUser();
+        $this->handler->handle($timeEntryId, $currentUser);
 
         return $this->response->withStatus(204);
     }

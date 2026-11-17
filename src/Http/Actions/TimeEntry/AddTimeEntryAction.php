@@ -7,6 +7,7 @@ namespace App\Http\Actions\TimeEntry;
 use App\Application\Commands\TimeEntry\TimeEntryCommand;
 use App\Application\Handlers\TimeEntry\AddTimeEntryHandler;
 use App\Application\Validators\TimeEntryValidator;
+use App\Domain\Exception\ForbiddenException;
 use App\Domain\Exception\ValidationException;
 use App\Http\Actions\Action;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -23,6 +24,17 @@ class AddTimeEntryAction extends Action {
         $errors = TimeEntryValidator::validate($data);
         if (count($errors) > 0) {
             throw new ValidationException('Felaktig indata', $errors);
+        }
+
+        $currentUser = $this->getCurrentUser();
+
+        if (
+            $currentUser->getUserId()->toString() !== $data['userId']
+            && !$currentUser->hasPermission('time.addentry')
+        ) {
+            throw new ForbiddenException(
+                'Saknar behörighet att registrera tid för annan användare',
+            );
         }
 
         $command = TimeEntryCommand::fromRequest($data);

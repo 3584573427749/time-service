@@ -23,11 +23,13 @@ final class GetUserEndpointTest extends BaseApiTestCases {
             ],
         ]);
 
-        $request = (new ServerRequestFactory())
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
             ->createServerRequest(
                 'GET',
                 '/users/550e8400-e29b-41d4-a716-446655440000',
-            );
+            ),
+        );
 
         $response = $this->app->handle($request);
 
@@ -62,11 +64,13 @@ final class GetUserEndpointTest extends BaseApiTestCases {
     public function testReturns404WhenUserDoesNotExist() : void {
         $this->loadSchema('users');
 
-        $request = (new ServerRequestFactory())
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
             ->createServerRequest(
                 'GET',
                 '/users/550e8400-e29b-41d4-a716-446655440000',
-            );
+            ),
+        );
 
         $response = $this->app->handle($request);
 
@@ -84,11 +88,13 @@ final class GetUserEndpointTest extends BaseApiTestCases {
     public function testReturns400WhenIdIsInvalid() : void {
         $this->loadSchema('users');
 
-        $request = (new ServerRequestFactory())
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
             ->createServerRequest(
                 'GET',
                 '/users/invalid-id',
-            );
+            ),
+        );
 
         $response = $this->app->handle($request);
 

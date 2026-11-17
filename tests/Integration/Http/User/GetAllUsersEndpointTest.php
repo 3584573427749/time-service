@@ -12,8 +12,10 @@ final class GetAllUsersEndpointTest extends BaseApiTestCases {
     public function testReturns200AndEmptyArrayWhenNoUsersExist() : void {
         $this->loadSchema('users');
 
-        $request = (new ServerRequestFactory())
-            ->createServerRequest('GET', '/users');
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
+            ->createServerRequest('GET', '/users'),
+        );
 
         $response = $this->app->handle($request);
 
@@ -59,8 +61,10 @@ final class GetAllUsersEndpointTest extends BaseApiTestCases {
             ],
         ]);
 
-        $request = (new ServerRequestFactory())
-            ->createServerRequest('GET', '/users');
+        $request = $this->authenticate(
+            (new ServerRequestFactory())
+            ->createServerRequest('GET', '/users'),
+        );
 
         $response = $this->app->handle($request);
 
