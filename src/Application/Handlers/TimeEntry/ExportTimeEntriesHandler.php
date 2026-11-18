@@ -13,7 +13,7 @@ use App\Domain\ValueObjects\DateTimeValue;
 use Doctrine\DBAL\Connection;
 use Throwable;
 
-final class ExportTimeEntriesHandler extends TimeEntryHandler {
+class ExportTimeEntriesHandler extends TimeEntryHandler {
     public function __construct(TimeEntryRepository $repository, private Connection $connection) {
         parent::__construct($repository);
     }

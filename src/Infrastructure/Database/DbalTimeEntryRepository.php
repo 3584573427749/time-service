@@ -84,7 +84,7 @@ class DbalTimeEntryRepository extends AbstractDbRepository implements TimeEntryR
         $rows = $this->connection
             ->executeQuery(
                 'SELECT * FROM ' . self::TABLE .
-                ' WHERE user_id = ? AND approved_by IS NOT NULL AND exported_by IS NOT NULL',
+                ' WHERE user_id = ? AND approved_by IS NOT NULL AND exported_by IS NULL',
                 [$userId->toString()],
             )
             ->fetchAllAssociative();
