@@ -23,8 +23,6 @@ final class ExportTimeEntriesHandlerTest extends TestCase {
     public function testHandleExportsTimeEntries() : void {
         $repository = $this->createMock(TimeEntryRepository::class);
 
-        $connection = $this->createMock(Connection::class);
-
         $repository
             ->expects($this->once())
             ->method('getUsersWithExportableTimeEntries')
@@ -40,19 +38,7 @@ final class ExportTimeEntriesHandlerTest extends TestCase {
             ->method('update')
             ->with($this->isInstanceOf(TimeEntry::class));
 
-        $connection
-            ->expects($this->once())
-            ->method('beginTransaction');
-
-        $connection
-            ->expects($this->once())
-            ->method('commit');
-
-        $connection
-            ->expects($this->never())
-            ->method('rollBack');
-
-        $handler = new ExportTimeEntriesHandler($repository, $connection, );
+        $handler = new ExportTimeEntriesHandler($repository );
 
         $csv = $handler->handle(
             new ExportTimeEntriesCommand(null, ),
@@ -67,8 +53,6 @@ final class ExportTimeEntriesHandlerTest extends TestCase {
     public function testHandleRollsBackWhenExceptionOccurs() : void {
         $repository = $this->createMock(TimeEntryRepository::class);
 
-        $connection = $this->createMock(Connection::class);
-
         $repository
             ->expects($this->once())
             ->method('getUsersWithExportableTimeEntries')
@@ -78,19 +62,7 @@ final class ExportTimeEntriesHandlerTest extends TestCase {
                 ),
             );
 
-        $connection
-            ->expects($this->once())
-            ->method('beginTransaction');
-
-        $connection
-            ->expects($this->never())
-            ->method('commit');
-
-        $connection
-            ->expects($this->once())
-            ->method('rollBack');
-
-        $handler = new ExportTimeEntriesHandler($repository, $connection, );
+        $handler = new ExportTimeEntriesHandler($repository );
 
         $this->expectException(\RuntimeException::class);
 
@@ -102,8 +74,6 @@ final class ExportTimeEntriesHandlerTest extends TestCase {
 
     public function testHandleReturnsFileWithJustHeaderWhenNoUsersIsFound() : void {
         $repository = $this->createMock(TimeEntryRepository::class);
-
-        $connection = $this->createMock(Connection::class);
 
         $userId = new UserId('550e8400-e29b-41d4-a716-446655440000', );
 
@@ -117,15 +87,7 @@ final class ExportTimeEntriesHandlerTest extends TestCase {
             ->with($userId)
             ->willReturn([]);
 
-        $connection
-            ->expects($this->once())
-            ->method('beginTransaction');
-
-        $connection
-            ->expects($this->once())
-            ->method('commit');
-
-        $handler = new ExportTimeEntriesHandler($repository, $connection, );
+        $handler = new ExportTimeEntriesHandler($repository) ;
 
         $csv = $handler->handle(
             new ExportTimeEntriesCommand([$userId]),

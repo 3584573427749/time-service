@@ -8,21 +8,15 @@ use App\Application\Commands\TimeEntry\ExportTimeEntriesCommand;
 use App\Application\Security\CurrentUser;
 use App\Domain\DataTransportObjects\TimeEntriesExportRow;
 use App\Domain\Exception\NotFoundException;
-use App\Domain\Repositories\TimeEntryRepository;
 use App\Domain\ValueObjects\DateTimeValue;
-use Doctrine\DBAL\Connection;
 use Throwable;
 
 class ExportTimeEntriesHandler extends TimeEntryHandler {
-    public function __construct(TimeEntryRepository $repository, private Connection $connection) {
-        parent::__construct($repository);
-    }
-
     /**
      * @throws NotFoundException
      */
     public function handle(ExportTimeEntriesCommand $command, CurrentUser $currentUser) : string {
-        $this->connection->beginTransaction();
+        $this->repository->beginTransaction();
 
         try {
             $csv = TimeEntriesExportRow::header();
@@ -48,12 +42,12 @@ class ExportTimeEntriesHandler extends TimeEntryHandler {
                 }
             }
 
-            $this->connection->commit();
+            $this->repository->commit();
 
             return $csv;
         } catch (Throwable $e) {
 
-            $this->connection->rollBack();
+            $this->repository->rollBack();
 
             throw $e;
         }

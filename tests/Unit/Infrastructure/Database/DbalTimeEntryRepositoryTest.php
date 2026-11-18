@@ -284,7 +284,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
 
         self::assertCount(1, $entries);
 
-         self::assertSame('550e8400-e29b-41d4-a716-446655440001', $entries[0]->getId()->toString());
+        self::assertSame('550e8400-e29b-41d4-a716-446655440001', $entries[0]->getId()->toString());
     }
 
     public function testGetApprovedNotExportedByUserReturnsEmptyArray() : void {

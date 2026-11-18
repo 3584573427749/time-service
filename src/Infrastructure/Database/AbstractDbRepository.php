@@ -16,21 +16,21 @@ abstract class AbstractDbRepository {
     /**
      * Starta transaktion
      */
-    protected function beginTransaction() : void {
+    public function beginTransaction() : void {
         $this->connection->beginTransaction();
     }
 
     /**
      * Commit transaktion
      */
-    protected function commit() : void {
+    public function commit() : void {
         $this->connection->commit();
     }
 
     /**
      * Rollback transaktion
      */
-    protected function rollback() : void {
+    public function rollBack() : void {
         $this->connection->rollBack();
     }
 }
