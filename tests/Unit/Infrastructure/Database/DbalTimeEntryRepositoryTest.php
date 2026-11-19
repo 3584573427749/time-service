@@ -38,7 +38,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
             ->executeQuery('SELECT COUNT(*) FROM time_entries')
             ->fetchOne();
 
-        self::assertSame(1, (int) $count);
+        self::assertSame(1, (int)$count);
     }
 
     public function testGetReturnsTimeEntry() : void {
@@ -189,7 +189,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
             ->executeQuery('SELECT COUNT(*) FROM time_entries')
             ->fetchOne();
 
-        self::assertSame(0, (int) $count);
+        self::assertSame(0, (int)$count);
     }
 
     public function testDeleteThrowsNotFoundException() : void {
@@ -231,5 +231,67 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
             new DateTimeValue('2026-11-05T12:00:00+00:00'),
             null,
         );
+    }
+
+    public function testGetUsersWithExportableTimeEntriesReturnsUserIds() : void {
+        $this->seed('time_entries', [
+            [
+                'id' => '550e8400-e29b-41d4-a716-446655440001',
+                'user_id' => '550e8400-e29b-41d4-a716-446655440000',
+                'date' => '2026-11-05',
+                'duration' => '03:05:00',
+                'activity_role' => 'Ledare',
+                'group_id' => null,
+                'comment' => null,
+                'approved_by' => '550e8400-e29b-41d4-a716-446655440999',
+                'approved_at' => '2026-11-05 13:00:00',
+                'exported_by' => null,
+                'exported_at' => null,
+                'created_at' => '2026-11-05 12:00:00',
+                'updated_at' => null,
+            ],
+        ]);
+
+        $result = $this->repository->getUsersWithExportableTimeEntries();
+
+        self::assertCount(1, $result);
+
+        self::assertSame('550e8400-e29b-41d4-a716-446655440000', $result[0]->toString());
+    }
+
+    public function testGetApprovedNotExportedByUserReturnsTimeEntries() : void {
+        $this->seed('time_entries', [
+            [
+                'id' => '550e8400-e29b-41d4-a716-446655440001',
+                'user_id' => '550e8400-e29b-41d4-a716-446655440000',
+                'date' => '2026-11-05',
+                'duration' => '03:05:00',
+                'activity_role' => 'Ledare',
+                'group_id' => null,
+                'comment' => null,
+                'approved_by' => '550e8400-e29b-41d4-a716-446655440999',
+                'approved_at' => '2026-11-05 13:00:00',
+                'exported_by' => null,
+                'exported_at' => null,
+                'created_at' => '2026-11-05 12:00:00',
+                'updated_at' => null,
+            ],
+        ]);
+
+        $entries = $this->repository->getApprovedNotExportedByUser(
+            new UserId('550e8400-e29b-41d4-a716-446655440000', ),
+        );
+
+        self::assertCount(1, $entries);
+
+        self::assertSame('550e8400-e29b-41d4-a716-446655440001', $entries[0]->getId()->toString());
+    }
+
+    public function testGetApprovedNotExportedByUserReturnsEmptyArray() : void {
+        $entries = $this->repository->getApprovedNotExportedByUser(
+            new UserId('550e8400-e29b-41d4-a716-446655440000', ),
+        );
+
+        self::assertSame([], $entries);
     }
 }

@@ -26,4 +26,20 @@ interface TimeEntryRepository {
     public function getByUser(UserId $userId) : array;
 
     public function delete(TimeEntryId $id) : void;
+
+    /**
+     * @return array<UserId>
+     */
+    public function getUsersWithExportableTimeEntries() : array;
+
+    /**
+     * @return array<TimeEntry>
+     */
+    public function getApprovedNotExportedByUser(UserId $userId) : array;
+
+    public function beginTransaction() : void;
+
+    public function commit() : void;
+
+    public function rollback() : void;
 }

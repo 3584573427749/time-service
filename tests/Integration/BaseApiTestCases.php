@@ -45,6 +45,12 @@ abstract class BaseApiTestCases extends DatabaseBaseTestCase {
         );
     }
 
+    protected function validateRequest(ServerRequestInterface $request) : void {
+        $validator = new OpenApiValidator();
+
+        $validator->validateRequest($request);
+    }
+
     protected function authenticate(
         ServerRequestInterface $request,
     ) : ServerRequestInterface {

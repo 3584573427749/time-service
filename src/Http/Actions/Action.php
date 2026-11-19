@@ -82,4 +82,19 @@ abstract class Action {
     protected function getCurrentUser() : CurrentUser {
         return $this->request->getAttribute('currentUser');
     }
+
+    protected function respondWithDownloadableTextFile(
+        string $content,
+        string $filename,
+        string $contentType = 'text/csv; charset=UTF-8',
+    ) : Response {
+        $this->response->getBody()->write($content);
+
+        return $this->response
+            ->withHeader('Content-Type', $contentType)
+            ->withHeader(
+                'Content-Disposition',
+                sprintf('attachment; filename="%s"', $filename),
+            );
+    }
 }

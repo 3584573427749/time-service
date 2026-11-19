@@ -7,6 +7,7 @@ use App\Http\Actions\Health\ShowHealthAction;
 use App\Http\Actions\TimeEntry\AddTimeEntryAction;
 use App\Http\Actions\TimeEntry\ApproveTimeEntryAction;
 use App\Http\Actions\TimeEntry\DeleteTimeEntryAction;
+use App\Http\Actions\TimeEntry\ExportTimeEntriesAction;
 use App\Http\Actions\TimeEntry\GetTimeEntryAction;
 use App\Http\Actions\TimeEntry\UpdateTimeEntryAction;
 use App\Http\Actions\User\DeleteUserAction;
@@ -31,5 +32,7 @@ return function (App $app) : void {
         $group->delete('/time-entry/{id}', DeleteTimeEntryAction::class);
 
         $group->put('/time-entry/{id}/approve', ApproveTimeEntryAction::class);
+
+        $group->post('/time-entry/export', ExportTimeEntriesAction::class);
     })->add(AuthMiddleware::class);
 };

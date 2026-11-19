@@ -1,12 +1,9 @@
 openapi: 3.0.3
 info:
   title: Time Service API
-  version: 0.0.2
+  version: 0.0.3
   description: >-
     OpenAPI för hantering av tidsrapportering i simning.ax-miljön
-
-servers:
-  - url: http://localhost:8080
 
 paths:
   /health:
@@ -257,7 +254,6 @@ paths:
                   error:
                     $ref: '#/components/schemas/ErrorResponse'
 
-
   /time-entry:
     post:
       tags:
@@ -312,7 +308,6 @@ paths:
                     example: 404
                   error:
                     $ref: '#/components/schemas/ErrorResponse'
-
   /time-entry/{id}:
     get:
       tags:
@@ -590,6 +585,67 @@ paths:
                     example: 409
                   error:
                     $ref: '#/components/schemas/ErrorResponse'
+  /time-entry/export:
+    post:
+      tags:
+        - TimeEntry
+      summary: Exportera attesterade tidsposter
+      description: >
+        Genererar en CSV-fil med attesterade och ännu ej exporterade
+        tidsposter. Om users anges exporteras endast poster för dessa
+        användare. Om users utelämnas exporteras poster för alla användare.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                users:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  example:
+                    - 550e8400-e29b-41d4-a716-446655440000
+                    - 550e8400-e29b-41d4-a716-446655440001
+      responses:
+        '200':
+          description: CSV-export genererad
+          headers:
+            Content-Disposition:
+              description: Filnamn för nedladdning
+              schema:
+                type: string
+                example: >
+                  attachment;
+                  filename="TimeEntriesExport_20261118122600.csv"
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '422':
+          description: Valideringsfel
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 422
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
+
+
 
 components:
   schemas:

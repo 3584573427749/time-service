@@ -64,4 +64,31 @@ class DbalTimeEntryRepository extends AbstractDbRepository implements TimeEntryR
     public function update(TimeEntry $timeEntry) : void {
         $this->connection->update(self::TABLE, $timeEntry->asDBRow(), ['id' => $timeEntry->getId()->toString()]);
     }
+
+    /**
+     * @return UserId[]
+     * @throws Exception
+     */
+    public function getUsersWithExportableTimeEntries() : array {
+        $userIds = $this->connection
+            ->executeQuery('SELECT DISTINCT user_id FROM ' . self::TABLE . ' WHERE approved_by IS NOT NULL AND exported_by IS NULL')
+            ->fetchFirstColumn();
+
+        return array_map(fn ($userId) => new UserId($userId), $userIds);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getApprovedNotExportedByUser(UserId $userId) : array {
+        $rows = $this->connection
+            ->executeQuery(
+                'SELECT * FROM ' . self::TABLE .
+                ' WHERE user_id = ? AND approved_by IS NOT NULL AND exported_by IS NULL',
+                [$userId->toString()],
+            )
+            ->fetchAllAssociative();
+
+        return array_map(fn ($row) => TimeEntry::fromDBRow($row), $rows);
+    }
 }
