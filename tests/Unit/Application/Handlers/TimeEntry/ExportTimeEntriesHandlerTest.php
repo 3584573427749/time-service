@@ -16,7 +16,6 @@ use App\Domain\ValueObjects\GroupId;
 use App\Domain\ValueObjects\TimeEntryId;
 use App\Domain\ValueObjects\TimeValue;
 use App\Domain\ValueObjects\UserId;
-use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\TestCase;
 
 final class ExportTimeEntriesHandlerTest extends TestCase {
@@ -38,7 +37,7 @@ final class ExportTimeEntriesHandlerTest extends TestCase {
             ->method('update')
             ->with($this->isInstanceOf(TimeEntry::class));
 
-        $handler = new ExportTimeEntriesHandler($repository );
+        $handler = new ExportTimeEntriesHandler($repository);
 
         $csv = $handler->handle(
             new ExportTimeEntriesCommand(null, ),
@@ -62,7 +61,7 @@ final class ExportTimeEntriesHandlerTest extends TestCase {
                 ),
             );
 
-        $handler = new ExportTimeEntriesHandler($repository );
+        $handler = new ExportTimeEntriesHandler($repository);
 
         $this->expectException(\RuntimeException::class);
 
