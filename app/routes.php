@@ -9,6 +9,7 @@ use App\Http\Actions\TimeEntry\ApproveTimeEntryAction;
 use App\Http\Actions\TimeEntry\DeleteTimeEntryAction;
 use App\Http\Actions\TimeEntry\ExportTimeEntriesAction;
 use App\Http\Actions\TimeEntry\GetTimeEntryAction;
+use App\Http\Actions\TimeEntry\SearchTimeEntriesAction;
 use App\Http\Actions\TimeEntry\UpdateTimeEntryAction;
 use App\Http\Actions\User\DeleteUserAction;
 use App\Http\Actions\User\GetAllUsersAction;
@@ -31,8 +32,8 @@ return function (App $app) : void {
         $group->put('/time-entry/{id}', UpdateTimeEntryAction::class);
         $group->delete('/time-entry/{id}', DeleteTimeEntryAction::class);
 
+        $group->post('/time-entry/search', SearchTimeEntriesAction::class);
         $group->put('/time-entry/{id}/approve', ApproveTimeEntryAction::class);
-
         $group->post('/time-entry/export', ExportTimeEntriesAction::class);
     })->add(AuthMiddleware::class);
 };

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Database;
 
+use App\Application\Commands\TimeEntry\SearchTimeEntriesCommand;
 use App\Domain\Entities\TimeEntry;
 use App\Domain\Exception\NotFoundException;
 use App\Domain\Repositories\TimeEntryRepository;
@@ -90,5 +91,39 @@ class DbalTimeEntryRepository extends AbstractDbRepository implements TimeEntryR
             ->fetchAllAssociative();
 
         return array_map(fn ($row) => TimeEntry::fromDBRow($row), $rows);
+    }
+
+    public function search(SearchTimeEntriesCommand $command) : array {
+        $query = new SearchTimeEntriesQueryBuilder()
+            ->build($command);
+
+        $sql =
+            'SELECT * FROM ' . self::TABLE
+            . $query->whereClause()
+            . $query->orderByClause($command)
+            . $query->pagingClause($command);
+
+        $rows = $this->connection
+            ->executeQuery($sql, $query->parameters())
+            ->fetchAllAssociative();
+
+        return array_map(fn ($row) => TimeEntry::fromDBRow($row), $rows);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getTotalCount(SearchTimeEntriesCommand $command) : int {
+        $query = new SearchTimeEntriesQueryBuilder()
+            ->build($command);
+
+        $sql =
+            'SELECT COUNT(*) FROM '
+            . self::TABLE
+            . $query->whereClause();
+
+        return (int)$this->connection
+            ->executeQuery($sql, $query->parameters())
+            ->fetchOne();
     }
 }

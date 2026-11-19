@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Repositories;
 
+use App\Application\Commands\TimeEntry\SearchTimeEntriesCommand;
 use App\Domain\Entities\TimeEntry;
 use App\Domain\ValueObjects\TimeEntryId;
 use App\Domain\ValueObjects\UserId;
@@ -42,4 +43,11 @@ interface TimeEntryRepository {
     public function commit() : void;
 
     public function rollback() : void;
+
+    /**
+     * @return array<TimeEntry>
+     */
+    public function search(SearchTimeEntriesCommand $command) : array;
+
+    public function getTotalCount(SearchTimeEntriesCommand $command) : int;
 }
