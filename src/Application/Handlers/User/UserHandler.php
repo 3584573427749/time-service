@@ -9,7 +9,6 @@ use Doctrine\DBAL\Connection;
 
 abstract class UserHandler {
     public function __construct(protected Connection $db, protected UserRepository $repository) {
-
     }
 
 }

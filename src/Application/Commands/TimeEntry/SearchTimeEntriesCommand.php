@@ -41,21 +41,21 @@ class SearchTimeEntriesCommand {
         }
 
         return new self(
-            firstRecord: (int)($data['firstRecord'] ?? 0),
-            maxRecords: (int)($data['maxRecords'] ?? 50),
-            users: $users,
-            from: isset($data['from'])
+            firstRecord:(int)($data['firstRecord'] ?? 0),
+            maxRecords:(int)($data['maxRecords'] ?? 50),
+            users:$users,
+            from:isset($data['from'])
                 ? new DateValue($data['from'])
                 : null,
-            to: isset($data['to'])
+            to:isset($data['to'])
                 ? new DateValue($data['to'])
                 : null,
-            status: isset($data['status'])
+            status:isset($data['status'])
                 ? TimeEntryStatus::from($data['status'])
                 : null,
-            activityRole: $data['activityRole'] ?? null,
-            sortBy: $data['sortBy'] ?? 'date',
-            sortDirection: $data['sortDirection'] ?? 'asc',
+            activityRole:$data['activityRole'] ?? null,
+            sortBy:$data['sortBy'] ?? 'date',
+            sortDirection:$data['sortDirection'] ?? 'asc',
         );
     }
 }

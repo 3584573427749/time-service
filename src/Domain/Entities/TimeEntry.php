@@ -30,6 +30,27 @@ class TimeEntry implements JsonSerializable {
     ) {
     }
 
+    /**
+     * @param array<string,mixed> $row
+     */
+    public static function fromDBRow(array $row) : self {
+        return new self(
+            new TimeEntryId($row['id']),
+            new UserId($row['user_id']),
+            new DateValue($row['date']),
+            new TimeValue($row['duration']),
+            $row['activity_role'],
+            !empty($row['group_id']) ? new GroupId($row['group_id']) : null,
+            $row['comment'],
+            !empty($row['approved_by']) ? new UserId($row['approved_by']) : null,
+            !empty($row['approved_at']) ? new DateTimeValue($row['approved_at']) : null,
+            !empty($row['exported_by']) ? new UserId($row['exported_by']) : null,
+            !empty($row['exported_at']) ? new DateTimeValue($row['exported_at']) : null,
+            new DateTimeValue($row['created_at']),
+            !empty($row['updated_at']) ? new DateTimeValue($row['updated_at']) : null,
+        );
+    }
+
     public function getId() : TimeEntryId {
         return $this->id;
     }
@@ -116,27 +137,6 @@ class TimeEntry implements JsonSerializable {
         $this->exportedBy = $userId;
         $this->exportedAt = $exportedAt;
         $this->updatedAt = $exportedAt;
-    }
-
-    /**
-     * @param array<string,mixed> $row
-     */
-    public static function fromDBRow(array $row) : self {
-        return new self(
-            new TimeEntryId($row['id']),
-            new UserId($row['user_id']),
-            new DateValue($row['date']),
-            new TimeValue($row['duration']),
-            $row['activity_role'],
-            !empty($row['group_id']) ? new GroupId($row['group_id']) : null,
-            $row['comment'],
-            !empty($row['approved_by']) ? new UserId($row['approved_by']) : null,
-            !empty($row['approved_at']) ? new DateTimeValue($row['approved_at']) : null,
-            !empty($row['exported_by']) ? new UserId($row['exported_by']) : null,
-            !empty($row['exported_at']) ? new DateTimeValue($row['exported_at']) : null,
-            new DateTimeValue($row['created_at']),
-            !empty($row['updated_at']) ? new DateTimeValue($row['updated_at']) : null,
-        );
     }
 
     /**

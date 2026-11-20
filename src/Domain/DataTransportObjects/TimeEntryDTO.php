@@ -11,8 +11,9 @@ use App\Domain\ValueObjects\GroupId;
 use App\Domain\ValueObjects\TimeEntryId;
 use App\Domain\ValueObjects\TimeValue;
 use App\Domain\ValueObjects\UserId;
+use JsonSerializable;
 
-class TimeEntryDTO implements \JsonSerializable {
+class TimeEntryDTO implements JsonSerializable {
     public function __construct(
         private TimeEntryId $id,
         private UserId $userId,

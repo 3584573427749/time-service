@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\DataTransportObjects;
 
-readonly class HealthDTO implements \JsonSerializable {
+use JsonSerializable;
+
+readonly class HealthDTO implements JsonSerializable {
     /**
      * @param array<string, string> $checks
      */

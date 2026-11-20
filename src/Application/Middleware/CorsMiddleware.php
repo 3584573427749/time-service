@@ -29,7 +29,13 @@ final class CorsMiddleware implements MiddlewareInterface {
         }
 
         return $response
-            ->withHeader('Access-Control-Allow-Methods', $_ENV['CORS_ALLOW_METHODS'] ?? 'GET,POST,PUT,PATCH,DELETE,OPTIONS')
-            ->withHeader('Access-Control-Allow-Headers', $_ENV['CORS_ALLOW_HEADERS'] ?? 'Authorization,Content-Type,Accept');
+            ->withHeader(
+                'Access-Control-Allow-Methods',
+                $_ENV['CORS_ALLOW_METHODS'] ?? 'GET,POST,PUT,PATCH,DELETE,OPTIONS',
+            )
+            ->withHeader(
+                'Access-Control-Allow-Headers',
+                $_ENV['CORS_ALLOW_HEADERS'] ?? 'Authorization,Content-Type,Accept',
+            );
     }
 }

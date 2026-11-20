@@ -11,9 +11,11 @@ use App\Domain\Exception\NotFoundException;
 use App\Domain\Exception\TimeEntryAlreadyApprovedException;
 use App\Domain\Exception\UnauthorizedException;
 use App\Domain\Exception\ValidationException;
+use InvalidArgumentException;
 use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use ReflectionClass;
 use Throwable;
 
 class ErrorHandler {
@@ -25,7 +27,14 @@ class ErrorHandler {
         $payload = $this->buildPayload($exception, $status);
 
         // Logga ALLT
-        $this->logger->error(sprintf('%s (%d): %s', $exception::class, $status, $exception->getMessage()), ['path' => $request->getUri()->getPath(), 'method' => $request->getMethod(), 'details' => method_exists($exception, 'getDetails') ? $exception->getDetails() : null]);
+        $this->logger->error(
+            sprintf('%s (%d): %s', $exception::class, $status, $exception->getMessage()),
+            ['path' => $request->getUri()
+                               ->getPath(), 'method' => $request->getMethod(), 'details' => method_exists(
+                                   $exception,
+                                   'getDetails',
+                               ) ? $exception->getDetails() : null],
+        );
 
         $response = new \Slim\Psr7\Response($status);
         $response->getBody()->write(json_encode($payload, JSON_THROW_ON_ERROR));
@@ -33,22 +42,9 @@ class ErrorHandler {
         return $response->withHeader('Content-Type', 'application/json');
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    private function buildPayload(Throwable $exception, int $status) : array {
-        return ['statusCode' => $status,
-            'error' => [
-                'type' => (new \ReflectionClass($exception))->getShortName(),
-                'message' => $exception->getMessage(),
-                'details' => method_exists($exception, 'getDetails') ? $exception->getDetails() : null,
-            ],
-        ];
-    }
-
     private function mapStatus(Throwable $exception) : int {
         return match (true) {
-            $exception instanceof \InvalidArgumentException => 400,
+            $exception instanceof InvalidArgumentException => 400,
             $exception instanceof UnauthorizedException => 401,
             $exception instanceof ForbiddenException => 403,
             $exception instanceof NotFoundException => 404,
@@ -58,5 +54,18 @@ class ErrorHandler {
             $exception instanceof InternalException => 500,
             default => 500,
         };
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function buildPayload(Throwable $exception, int $status) : array {
+        return ['statusCode' => $status,
+            'error' => [
+                'type' => (new ReflectionClass($exception))->getShortName(),
+                'message' => $exception->getMessage(),
+                'details' => method_exists($exception, 'getDetails') ? $exception->getDetails() : null,
+            ],
+        ];
     }
 }

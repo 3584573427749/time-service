@@ -17,6 +17,5 @@ class GetAllUsersAction extends UserAction {
         $DTOs = $this->handler->getAll();
 
         return $this->respondWithData($DTOs);
-
     }
 }

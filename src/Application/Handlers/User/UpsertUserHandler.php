@@ -28,7 +28,6 @@ class UpsertUserHandler extends UserHandler {
             $this->repository->update($user);
         }
 
-
         $dto = UserDTO::fromEntity($user);
 
         return $dto;

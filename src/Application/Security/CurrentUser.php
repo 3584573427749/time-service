@@ -26,7 +26,7 @@ class CurrentUser {
             static fn (string $permission) : ?Permission => Permission::tryFrom($permission),
             $permissions,
         )
-                |> (fn ($x) => array_filter($x, static fn (?Permission $permission) : bool => $permission !== null, ))
+                |> (fn ($x) => array_filter($x, static fn (?Permission $permission) : bool => $permission !== null))
                 |> array_values(...);
     }
 

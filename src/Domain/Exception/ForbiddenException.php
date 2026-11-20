@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Exception;
 
-class ForbiddenException extends \RuntimeException {
+use RuntimeException;
+
+class ForbiddenException extends RuntimeException {
     /**
      * @param array<string, string> $details
      */

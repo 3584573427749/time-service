@@ -18,8 +18,7 @@ class SearchTimeEntriesHandler extends TimeEntryHandler {
         );
 
         $timeEntries = array_map(
-            fn (TimeEntry $entry) : TimeEntryDTO =>
-            TimeEntryDTO::fromEntity($entry),
+            fn (TimeEntry $entry) : TimeEntryDTO => TimeEntryDTO::fromEntity($entry),
             $entries,
         );
 

@@ -28,8 +28,6 @@ class SearchTimeEntriesAction extends Action {
 
         $data = $this->getFormData();
 
-        $data = $this->getFormData();
-
         $errors = SearchTimeEntriesValidator::validate($data);
 
         if (count($errors) > 0) {

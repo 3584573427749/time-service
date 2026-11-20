@@ -8,7 +8,7 @@ use DateTimeImmutable;
 use InvalidArgumentException;
 use JsonSerializable;
 
-final class DateValue implements JsonSerializable {
+class DateValue implements JsonSerializable {
     private DateTimeImmutable $value;
 
     public function __construct(string $value) {
@@ -31,12 +31,12 @@ final class DateValue implements JsonSerializable {
         return new self($value);
     }
 
-    public function toString() : string {
-        return $this->value->format('Y-m-d');
-    }
-
     public function __toString() : string {
         return $this->toString();
+    }
+
+    public function toString() : string {
+        return $this->value->format('Y-m-d');
     }
 
     public function toDateTimeImmutable() : DateTimeImmutable {
@@ -51,11 +51,11 @@ final class DateValue implements JsonSerializable {
         return $this->toString() === $other->toString();
     }
 
-    public function isAfter(self $other) : bool {
-        return $this->toString() > $other->toString();
-    }
-
     public function isFuture() : bool {
         return $this->isAfter(new self(date('Y-m-d')));
+    }
+
+    public function isAfter(self $other) : bool {
+        return $this->toString() > $other->toString();
     }
 }

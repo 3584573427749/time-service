@@ -18,11 +18,11 @@ class TimeEntriesExportRow {
 
     public static function header() : string {
         return implode(self::separator, [
-            'userId',
-            'date',
-            'duration',
-            'role',
-            'groupId',
+                'userId',
+                'date',
+                'duration',
+                'role',
+                'groupId',
             ]) . PHP_EOL;
     }
 

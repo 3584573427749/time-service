@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Exception;
 
-class InternalException extends \RuntimeException {
+use RuntimeException;
+
+class InternalException extends RuntimeException {
     /**
      * @param array<string, string> $details
      */

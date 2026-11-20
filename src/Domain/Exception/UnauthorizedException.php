@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Exception;
 
-class UnauthorizedException extends \RuntimeException {
+use RuntimeException;
+
+class UnauthorizedException extends RuntimeException {
     /**
      * @param array<string, string> $details
      */

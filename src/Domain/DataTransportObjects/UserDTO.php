@@ -7,8 +7,9 @@ namespace App\Domain\DataTransportObjects;
 use App\Domain\Entities\User;
 use App\Domain\ValueObjects\DateTimeValue;
 use App\Domain\ValueObjects\UserId;
+use JsonSerializable;
 
-class UserDTO implements \JsonSerializable {
+class UserDTO implements JsonSerializable {
     public function __construct(
         private UserId $id,
         private string $firstName,
@@ -28,7 +29,6 @@ class UserDTO implements \JsonSerializable {
             $group->getCreatedAt(),
             $group->getUpdatedAt() ?? null,
         );
-
     }
 
     public function jsonSerialize() : mixed {

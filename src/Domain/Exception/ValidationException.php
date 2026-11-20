@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Domain\Exception;
 
-class ValidationException extends \RuntimeException {
+use RuntimeException;
+
+class ValidationException extends RuntimeException {
     /**
      * @param array<string, string> $details
      */

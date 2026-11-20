@@ -42,6 +42,6 @@ class AddTimeEntryAction extends Action {
 
         $dto = $this->handler->handle($command);
 
-        return $this->respondWithData($dto, 201, );
+        return $this->respondWithData($dto, 201);
     }
 }

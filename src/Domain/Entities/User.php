@@ -20,6 +20,34 @@ class User implements JsonSerializable {
     ) {
     }
 
+    /**
+     * @param array<string, mixed> $row
+     */
+    public static function fromDBRow(array $row) : self {
+        return new self(
+            new UserId($row['id']),
+            $row['first_name'],
+            $row['last_name'],
+            $row['active'],
+            new DateTimeValue($row['created_at']),
+            !empty($row['updated_at']) ? new DateTimeValue($row['updated_at']) : null,
+        );
+    }
+
+    public static function fromCommand(UpsertUserCommand $command) : self {
+        // fromCommand används endast vid skapande av ny användare
+        // därför sätts createdAt till nuvarande tid
+        // och updatedAt till null
+        return new self(
+            $command->id,
+            $command->firstName,
+            $command->lastName,
+            $command->active,
+            new DateTimeValue('now'),
+            null,
+        );
+    }
+
     public function getCreatedAt() : DateTimeValue {
         return $this->createdAt;
     }
@@ -58,34 +86,6 @@ class User implements JsonSerializable {
 
     public function setUpdatedAt(?DateTimeValue $updatedAt) : void {
         $this->updatedAt = $updatedAt;
-    }
-
-    /**
-     * @param array<string, mixed> $row
-     */
-    public static function fromDBRow(array $row) : self {
-        return new self(
-            new UserId($row['id']),
-            $row['first_name'],
-            $row['last_name'],
-            $row['active'],
-            new DateTimeValue($row['created_at']),
-            !empty($row['updated_at']) ? new DateTimeValue($row['updated_at']) : null,
-        );
-    }
-
-    public static function fromCommand(UpsertUserCommand $command) : self {
-        // fromCommand används endast vid skapande av ny användare
-        // därför sätts createdAt till nuvarande tid
-        // och updatedAt till null
-        return new self(
-            $command->id,
-            $command->firstName,
-            $command->lastName,
-            $command->active,
-            new DateTimeValue('now'),
-            null,
-        );
     }
 
     /**

@@ -38,7 +38,7 @@ class ExportTimeEntriesAction extends Action {
 
         $command = ExportTimeEntriesCommand::fromRequest($data);
 
-        $csv = $this->handler->handle($command, $currentUser, );
+        $csv = $this->handler->handle($command, $currentUser);
         $fileName = 'TimeEntriesExport_' . date('YmdHis') . 'csv';
 
         return $this->respondWithDownloadableTextFile($csv, $fileName);

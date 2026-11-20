@@ -6,11 +6,12 @@ namespace App\Domain\ValueObjects;
 
 use DateTimeImmutable;
 use DateTimeInterface;
+use DateTimeZone;
 use Exception;
 use InvalidArgumentException;
 use JsonSerializable;
 
-final class DateTimeValue implements JsonSerializable {
+class DateTimeValue implements JsonSerializable {
     private DateTimeImmutable $value;
 
     /**
@@ -23,7 +24,7 @@ final class DateTimeValue implements JsonSerializable {
     public function __construct(string|DateTimeInterface $value) {
         if ($value instanceof DateTimeInterface) {
             $this->value = new DateTimeImmutable($value->format(DateTimeImmutable::ATOM));
-            $this->value = $this->value->setTimezone(new \DateTimeZone('Europe/Mariehamn'));
+            $this->value = $this->value->setTimezone(new DateTimeZone('Europe/Mariehamn'));
 
             return;
         }
@@ -34,7 +35,7 @@ final class DateTimeValue implements JsonSerializable {
             throw new InvalidArgumentException("Invalid datetime value: {$value}");
         }
 
-        $this->value = $dt->setTimezone(new \DateTimeZone('UTC'));
+        $this->value = $dt->setTimezone(new DateTimeZone('UTC'));
     }
 
     public static function fromString(string $value) : self {
@@ -49,12 +50,12 @@ final class DateTimeValue implements JsonSerializable {
         return $this->value->format(DATE_ATOM);
     }
 
-    public function toString() : string {
-        return $this->value->format('Y-m-d H:i:s');
-    }
-
     public function __toString() : string {
         return $this->toString();
+    }
+
+    public function toString() : string {
+        return $this->value->format('Y-m-d H:i:s');
     }
 
     public function jsonSerialize() : string {

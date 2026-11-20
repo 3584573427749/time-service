@@ -27,50 +27,6 @@ class SearchTimeEntriesQueryBuilder {
         return $this;
     }
 
-    public function whereClause() : string {
-        if ($this->where === []) {
-            return '';
-        }
-
-        return ' WHERE ' . implode(
-            ' AND ',
-            $this->where,
-        );
-    }
-
-    /**
-     * @return array<mixed>
-     */
-    public function parameters() : array {
-        return $this->parameters;
-    }
-
-    public function orderByClause(SearchTimeEntriesCommand $command) : string {
-        $column = match ($command->sortBy) {
-            'user' => 'user_id',
-            'status' => '
-            CASE
-                WHEN approved_by IS NULL THEN 1
-                WHEN exported_by IS NULL THEN 2
-                ELSE 3
-            END
-        ',
-            default => 'date',
-        };
-
-        $direction = strtoupper($command->sortDirection);
-
-        return sprintf(' ORDER BY %s %s', $column, $direction);
-    }
-
-    public function pagingClause(SearchTimeEntriesCommand $command) : string {
-        return sprintf(
-            ' LIMIT %d OFFSET %d',
-            $command->maxRecords,
-            $command->firstRecord,
-        );
-    }
-
     private function addUsersFilter(SearchTimeEntriesCommand $command) : void {
         if ($command->users === null) {
             return;
@@ -128,5 +84,49 @@ class SearchTimeEntriesQueryBuilder {
         $this->where[] = 'activity_role = ?';
 
         $this->parameters[] = $command->activityRole;
+    }
+
+    public function whereClause() : string {
+        if ($this->where === []) {
+            return '';
+        }
+
+        return ' WHERE ' . implode(
+            ' AND ',
+            $this->where,
+        );
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    public function parameters() : array {
+        return $this->parameters;
+    }
+
+    public function orderByClause(SearchTimeEntriesCommand $command) : string {
+        $column = match ($command->sortBy) {
+            'user' => 'user_id',
+            'status' => '
+            CASE
+                WHEN approved_by IS NULL THEN 1
+                WHEN exported_by IS NULL THEN 2
+                ELSE 3
+            END
+        ',
+            default => 'date',
+        };
+
+        $direction = strtoupper($command->sortDirection);
+
+        return sprintf(' ORDER BY %s %s', $column, $direction);
+    }
+
+    public function pagingClause(SearchTimeEntriesCommand $command) : string {
+        return sprintf(
+            ' LIMIT %d OFFSET %d',
+            $command->maxRecords,
+            $command->firstRecord,
+        );
     }
 }
