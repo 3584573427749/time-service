@@ -65,7 +65,7 @@ abstract class BaseApiTestCases extends DatabaseBaseTestCase {
             )
             ->withHeader(
                 'X-Service-Permissions',
-                'time.approve,time.export',
+                'time.approve,time.export,time.view',
             );
     }
 }

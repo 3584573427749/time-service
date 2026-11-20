@@ -645,6 +645,96 @@ paths:
                   error:
                     $ref: '#/components/schemas/ErrorResponse'
 
+  /time-entry/search:
+    post:
+      tags:
+        - TimeEntry
+      summary: Sök tidsposter
+      description: >
+        Söker tidsposter med stöd för filtrering, sortering
+        och paginering.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                users:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                from:
+                  type: string
+                  format: date
+                to:
+                  type: string
+                  format: date
+                status:
+                  type: string
+                  enum:
+                    - open
+                    - approved
+                    - exported
+                activityRole:
+                  type: string
+                firstRecord:
+                  type: integer
+                  minimum: 0
+                  default: 0
+                maxRecords:
+                  type: integer
+                  minimum: 1
+                  default: 50
+                sortBy:
+                  type: string
+                  enum:
+                    - date
+                    - user
+                    - status
+                sortDirection:
+                  type: string
+                  enum:
+                    - asc
+                    - desc
+      responses:
+        '200':
+          description: Sökresultat
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  firstRecord:
+                    type: integer
+                    example: 0
+                  totalCount:
+                    type: integer
+                    example: 123
+                  timeEntries:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TimeEntry'
+        '401':
+          $ref: '#/components/responses/UnauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/ForbiddenResponse'
+        '422':
+          description: Valideringsfel
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - statusCode
+                  - error
+                properties:
+                  statusCode:
+                    type: integer
+                    example: 422
+                  error:
+                    $ref: '#/components/schemas/ErrorResponse'
 
 
 components:

@@ -136,10 +136,7 @@ final class ExportTimeEntriesEndpointTest extends BaseApiTestCases {
                     '/time-entry/export',
                 ),
         )
-                        ->withHeader(
-                            'Content-Type',
-                            'application/json',
-                        );
+                        ->withHeader('Content-Type', 'application/json');
 
         $request->getBody()->write(json_encode($payload, JSON_THROW_ON_ERROR));
 
@@ -186,7 +183,7 @@ final class ExportTimeEntriesEndpointTest extends BaseApiTestCases {
     public function testReturns401WhenAuthenticationIsMissing() : void {
         $request = (new ServerRequestFactory())
             ->createServerRequest('POST', '/time-entry/export')
-        ->withHeader('Content-Type', 'application/json');
+            ->withHeader('Content-Type', 'application/json');
         $request->getBody()->write('{}');
 
         $response = $this->app->handle($request);

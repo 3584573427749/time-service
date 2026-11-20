@@ -17,7 +17,7 @@ use App\Infrastructure\Database\DbalTimeEntryRepository;
 final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
     private DbalTimeEntryRepository $repository;
 
-    protected function setUp():void {
+    protected function setUp() : void {
         parent::setUp();
 
         $this->loadSchema('users');
@@ -28,7 +28,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
         );
     }
 
-    public function testAddCreatesTimeEntry():void {
+    public function testAddCreatesTimeEntry() : void {
         $this->seedUser();
 
         $this->repository->add(
@@ -42,7 +42,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
         self::assertSame(1, (int)$count);
     }
 
-    public function testGetReturnsTimeEntry():void {
+    public function testGetReturnsTimeEntry() : void {
         $this->seed('time_entries', [
             [
                 'id' => '550e8400-e29b-41d4-a716-446655440001',
@@ -71,7 +71,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
         );
     }
 
-    public function testGetThrowsNotFoundException():void {
+    public function testGetThrowsNotFoundException() : void {
         $this->expectException(
             NotFoundException::class,
         );
@@ -81,7 +81,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
         );
     }
 
-    public function testGetByUserReturnsTimeEntries():void {
+    public function testGetByUserReturnsTimeEntries() : void {
         $this->seed('time_entries', [
             [
                 'id' => '550e8400-e29b-41d4-a716-446655440001',
@@ -122,7 +122,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
         self::assertCount(2, $entries);
     }
 
-    public function testGetByUserReturnsEmptyArray():void {
+    public function testGetByUserReturnsEmptyArray() : void {
         $entries = $this->repository->getByUser(
             new UserId('550e8400-e29b-41d4-a716-446655440000'),
         );
@@ -130,7 +130,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
         self::assertSame([], $entries);
     }
 
-    public function testGetAllReturnsAllTimeEntries():void {
+    public function testGetAllReturnsAllTimeEntries() : void {
         $this->seed('time_entries', [
             [
                 'id' => '550e8400-e29b-41d4-a716-446655440001',
@@ -154,7 +154,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
         self::assertCount(1, $entries);
     }
 
-    public function testUpdateUpdatesTimeEntry():void {
+    public function testUpdateUpdatesTimeEntry() : void {
         $this->seedUser();
 
         $timeEntry = $this->createTimeEntry();
@@ -175,7 +175,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
         );
     }
 
-    public function testDeleteRemovesTimeEntry():void {
+    public function testDeleteRemovesTimeEntry() : void {
         $this->seedUser();
 
         $timeEntry = $this->createTimeEntry();
@@ -193,7 +193,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
         self::assertSame(0, (int)$count);
     }
 
-    public function testDeleteThrowsNotFoundException():void {
+    public function testDeleteThrowsNotFoundException() : void {
         $this->expectException(
             NotFoundException::class,
         );
@@ -203,7 +203,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
         );
     }
 
-    private function seedUser():void {
+    private function seedUser() : void {
         $this->seed('users', [
             [
                 'id' => '550e8400-e29b-41d4-a716-446655440000',
@@ -216,7 +216,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
         ]);
     }
 
-    private function createTimeEntry():TimeEntry {
+    private function createTimeEntry() : TimeEntry {
         return new TimeEntry(
             new TimeEntryId('550e8400-e29b-41d4-a716-446655440001'),
             new UserId('550e8400-e29b-41d4-a716-446655440000'),
@@ -234,7 +234,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
         );
     }
 
-    public function testGetUsersWithExportableTimeEntriesReturnsUserIds():void {
+    public function testGetUsersWithExportableTimeEntriesReturnsUserIds() : void {
         $this->seed('time_entries', [
             [
                 'id' => '550e8400-e29b-41d4-a716-446655440001',
@@ -260,7 +260,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
         self::assertSame('550e8400-e29b-41d4-a716-446655440000', $result[0]->toString());
     }
 
-    public function testGetApprovedNotExportedByUserReturnsTimeEntries():void {
+    public function testGetApprovedNotExportedByUserReturnsTimeEntries() : void {
         $this->seed('time_entries', [
             [
                 'id' => '550e8400-e29b-41d4-a716-446655440001',
@@ -280,7 +280,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
         ]);
 
         $entries = $this->repository->getApprovedNotExportedByUser(
-            new UserId('550e8400-e29b-41d4-a716-446655440000',),
+            new UserId('550e8400-e29b-41d4-a716-446655440000', ),
         );
 
         self::assertCount(1, $entries);
@@ -288,15 +288,15 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
         self::assertSame('550e8400-e29b-41d4-a716-446655440001', $entries[0]->getId()->toString());
     }
 
-    public function testGetApprovedNotExportedByUserReturnsEmptyArray():void {
+    public function testGetApprovedNotExportedByUserReturnsEmptyArray() : void {
         $entries = $this->repository->getApprovedNotExportedByUser(
-            new UserId('550e8400-e29b-41d4-a716-446655440000',),
+            new UserId('550e8400-e29b-41d4-a716-446655440000', ),
         );
 
         self::assertSame([], $entries);
     }
 
-    public function testSearchReturnsMatchingTimeEntries():void {
+    public function testSearchReturnsMatchingTimeEntries() : void {
         $this->seed('time_entries', [
             [
                 'id' => '550e8400-e29b-41d4-a716-446655440001',
@@ -322,7 +322,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
         self::assertCount(1, $result);
     }
 
-    public function testSearchFiltersByUser():void {
+    public function testSearchFiltersByUser() : void {
         $this->seed('time_entries', [
             [
                 'id' => '550e8400-e29b-41d4-a716-446655440001',
@@ -369,7 +369,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
         self::assertSame('550e8400-e29b-41d4-a716-446655440000', $result[0]->getUserId()->toString());
     }
 
-    public function testSearchFiltersByStatusOpen():void {
+    public function testSearchFiltersByStatusOpen() : void {
         $this->seed('time_entries', [
             [
                 'id' => '550e8400-e29b-41d4-a716-446655440001',
@@ -412,7 +412,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
         self::assertCount(1, $result);
     }
 
-    public function testSearchAppliesPaging():void {
+    public function testSearchAppliesPaging() : void {
         $this->seed('time_entries', [
             [
                 'id' => '550e8400-e29b-41d4-a716-446655440001',
@@ -459,14 +459,14 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
             ],
         ]);
 
-        $command = SearchTimeEntriesCommand::fromRequest(['firstRecord' => 1, 'maxRecords' => 1,]);
+        $command = SearchTimeEntriesCommand::fromRequest(['firstRecord' => 1, 'maxRecords' => 1, ]);
 
         $result = $this->repository->search($command);
 
         self::assertCount(1, $result);
     }
 
-    public function testGetTotalCountReturnsTotalNumberOfMatchingRecords():void {
+    public function testGetTotalCountReturnsTotalNumberOfMatchingRecords() : void {
         $this->seed('time_entries', [
             [
                 'id' => '550e8400-e29b-41d4-a716-446655440001',
@@ -520,7 +520,7 @@ final class DbalTimeEntryRepositoryTest extends DatabaseBaseTestCase {
         self::assertSame(3, $count);
     }
 
-    public function testGetTotalCountUsesSameFiltersAsSearch():void {
+    public function testGetTotalCountUsesSameFiltersAsSearch() : void {
         $this->seed('time_entries', [
             [
                 'id' => '550e8400-e29b-41d4-a716-446655440001',
